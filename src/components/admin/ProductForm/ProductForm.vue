@@ -50,41 +50,67 @@
             <div class="card-body">
               <h5 class="card-title">Product Variants</h5>
               <!-- Search Box and Filter -->
-              <div class="mb-3">
-                <input
-                  type="text"
-                  v-model="variantFilter.keyword"
-                  class="form-control"
-                  placeholder="Search..."
-                />
+              <div class="d-flex justify-content-between">
+                <div></div>
+                <div @click="handleClearVariantFilter" class="icon" style="cursor: pointer;">
+                  <i class="fa-solid fa-filter-circle-xmark fa-lg"></i>
+                </div>
               </div>
+              <v-row dense>
+                <v-col
+                  cols="12"
+                  md="6"
+                  sm="6"
+                >
+                  <div class="mb-3">
+                    <input
+                      type="text"
+                      v-model="variantFilter.keyword"
+                      class="form-control"
+                      placeholder="Search..."
+                    />
+                  </div>
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="6"
+                  sm="6"
+                >
+                  <div class="mb-3">
+                    <v-select
+                      :items="variantStatusOptions"
+                      label="Status"
+                      density="compact"
+                      variant="outlined"
+                      item-title="label"
+                      item-value="value"
+                      hide-details
+                      v-model="variantFilter.status"
+                      clearable
+                    />
+                  </div>
+                </v-col>
+                <!-- <div class="mb-3">
+                  <v-select
+                    :items="variantSortOptions"
+                    label="Sort by"
+                    density="compact"
+                    variant="outlined"
+                    item-title="label"
+                    item-value="value"
+                    v-model="selectedSortField"
+                    clearable
+                  />
+                </div> -->
+              </v-row>
 
-              <div class="mb-3">
-                <v-select
-                  :items="variantStatusOptions"
-                  label="Status"
-                  density="compact"
-                  variant="outlined"
-                  item-title="label"
-                  item-value="value"
-                  v-model="variantFilter.status"
-                  clearable
-                />
+              <div class="row mb-3">
+                <div class="col-12 text-end">
+                  <div @click="getAllVariants" class="btn btn-success">
+                    <i class="fa-solid fa-filter"></i> Apply Filters
+                  </div>
+                </div>
               </div>
-
-              <!-- <div class="mb-3">
-                <v-select
-                  :items="variantSortOptions"
-                  label="Sort by"
-                  density="compact"
-                  variant="outlined"
-                  item-title="label"
-                  item-value="value"
-                  v-model="selectedSortField"
-                  clearable
-                />
-              </div> -->
-
               <!-- Display Product Variants -->
               <div v-if="variants.length">
                 <table class="table">
@@ -511,6 +537,7 @@
         productSchema,
         statusOptions: ProductStatus.toArray(),
         variantStatusOptions: ProductVariantStatus.toArray(),
+        variantSortOptions: ProductVariantSortField.toArray(),
         productSizes: ProductSize.toArray(),
         variantFilter: {
           status: null,
@@ -574,10 +601,11 @@
       async getAllVariants() {
         try {
           if (this.pageTitle.includes('Modify')) {
-            const processedFilter = FilterHelper.processFilter(this.filter);
+            const processedFilter = FilterHelper.processFilter(this.variantFilter);
             const params = {
               ...processedFilter,
             }
+            console.log(params)
             const result = await productService.getAllVariants(this.localProduct.id, {
               params: params
             })
@@ -670,7 +698,7 @@
           console.log('Deleting variant with id:', id);
 
           await productService.deleteVariant(this.localProduct.id, id)
-          
+
           // Refresh the variant list
           await this.getAllVariants();
 
@@ -781,7 +809,14 @@
       handleChangeIngredient(index, value) {
         const result = this.ingredients.find(item => item.id === value);
         this.variantDetail.ingredients[index].unit = result.defaultUnit
-      }
+      },
+      handleClearVariantFilter() {
+        this.variantFilter = {
+          status: '',
+          keyword: '',
+        },
+        this.getAllVariants()
+      },
     },
     mounted() {
       tinymce.init({
