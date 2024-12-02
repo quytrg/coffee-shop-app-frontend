@@ -130,7 +130,8 @@
         </div>
         <div class="card-body">
           <div class="product-action d-flex justify-content-between mb-3">
-            <ChangeMulti @apply=""/>
+            <!-- <ChangeMulti @apply=""/> -->
+             <div></div>
             <router-link :to="{ name: 'CreateProduct' }">
               <button class="btn btn-main btn-primary">+ New Product</button>
             </router-link>
@@ -196,6 +197,12 @@
                 </td>
                 <td>
                   <div class="d-flex icon">
+                    <div
+                      class="cursor-pointer me-2"
+                      @click="viewProductDetail(product.id)"
+                    >
+                      <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
+                    </div>
                     <router-link 
                       :to="{ name: 'ModifyProduct', params: { id: `${product.id}`} }"
                       class="d-flex align-items-center me-2"
@@ -240,6 +247,136 @@
                 </v-col>
               </v-row>
             </v-container>
+          </div>
+          <!-- Product detail dialog -->
+          <div class="me-2">
+            <v-dialog
+              v-model="dialog"
+              max-width="720"
+              opacity="0.32"
+              transition="dialog-top-transition"
+            >
+              <v-card
+                prepend-icon="mdi-package-variant"
+                title="Product Information"
+              >
+                <v-card-text>
+                  <v-row dense>
+                    <v-col
+                      cols="12"
+                      md="4"
+                      sm="6"
+                    >
+                      <v-text-field
+                        label="Name"
+                        density="compact"
+                        variant="outlined"
+                        v-model="productDetail.name"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col
+                      cols="12"
+                      md="4"
+                      sm="6"
+                    >
+                      <v-text-field
+                        label="Category"
+                        density="compact"
+                        variant="outlined"
+                        v-model="productDetail.category.name"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col
+                      cols="12"
+                      md="4"
+                      sm="6"
+                    >
+                      <v-text-field
+                        label="Position"
+                        density="compact"
+                        variant="outlined"
+                        type="number"
+                        v-model="productDetail.position"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col
+                      cols="12"
+                      md="4"
+                      sm="6"
+                    >
+                      <v-select
+                        :items="statusOptions"
+                        label="Status"
+                        density="compact"
+                        variant="outlined"
+                        item-title="label"
+                        item-value="value"
+                        v-model="productDetail.status" 
+                        :readonly="true"
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      md="12"
+                      sm="12"
+                    >
+                      <label for="description" class="form-label">Description</label>
+                      <h6 v-html="productDetail.description"></h6>
+                    </v-col>
+                  </v-row>
+                  <!-- Variant Section -->
+                  <v-divider class="my-4"></v-divider>
+                  <h5 class="mb-4">Variants</h5>
+                  <div v-if="variants.length">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Size</th>
+                          <th>Status</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="variant in variants" :key="variant.id">
+                          <td>
+                            <v-chip :color="getProductSizeClass(variant.size)">
+                              {{ getProductSizeLabel(variant.size) }}
+                            </v-chip>
+                          </td>
+                          <td>
+                            <v-chip :color="getVariantStatusClass(variant.status)">
+                              {{ getVariantStatusLabel(variant.status) }}
+                            </v-chip>
+                          </td>
+                          <td>{{ variant.price }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div v-else>
+                    <p>No variants found</p>
+                  </div>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn
+                    text="Close"
+                    variant="plain"
+                    @click="dialog = false"
+                  ></v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
         </div>
       </div>
@@ -389,11 +526,12 @@ import successDialogHelper from '@/helpers/admin/dialogs/success.helper.js'
 import Unauthorized from '@/components/admin/Unauthorized/Unauthorized.vue'
 import Select from '@/components/admin/Select/Select.vue'
 import CategoryService from '@/services/admin/category.service'
-import { ProductStatus, ProductSortField } from '@/enums/product.enum.js'
+import { ProductStatus, ProductSortField, ProductSize } from '@/enums/product.enum.js'
 import { SortDirection } from '@/enums/sortDir.enum.js'
 import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
 import { PermissionHelper } from '@/helpers/admin/auth/permission.helper'
 import { CategoryStatus } from '@/enums/category.enum.js'
+import { ProductVariantStatus } from '@/enums/productVariant.enum.js'
 
 export default {
   name: "Product",
@@ -424,6 +562,15 @@ export default {
       statusOptions: ProductStatus.toArray(),
       sortFieldOptions: ProductSortField.toArray(),
       sortDirectionOptions: SortDirection.toArray(),
+      dialog: false,
+      productDetail: {
+        name: null,
+        category: null,
+        position: null,
+        status: null,
+        description: '',
+      },
+      variants: []
     }
   },
   methods: {
@@ -530,6 +677,21 @@ export default {
         console.log(err)
       }
     },
+    async getAllVariants(productId) {
+      try {
+        const filter = {
+          params: {
+            size: 50,
+          }
+        }
+        const result = await ProductService.getAllVariants(productId, filter)
+        console.log(result)
+        this.variants = result.data.content
+      }
+      catch(err) {
+        console.log(err)
+      }
+    },
     getStatusClass(status) {
       const config = ProductStatus.getConfig(status);
       return `${config.color}`;
@@ -570,7 +732,42 @@ export default {
     // Xử lý thay đổi trang
     handlePageChange(newPage) {
       this.page = newPage;
-    }
+    },
+    resetProductDetail() {
+      this.productDetail = {
+        name: null,
+        category: null,
+        position: null,
+        status: null,
+        description: '',
+      }
+    },
+    async viewProductDetail(id) {
+      // reset productDetail variable
+      this.resetProductDetail()
+      // fetch product deltail by id
+      const res = await ProductService.getProductById(id);
+      console.log("Product deltail: ", res)
+      this.productDetail = { ...res.data };
+      // fetch all variants of product
+      await this.getAllVariants(id)
+      // display dialog
+      this.dialog = true;
+    },
+    getProductSizeClass(size) {
+      const config = ProductSize.getConfig(size);
+      return `${config.color}`;
+    },
+    getProductSizeLabel(size) {
+      return ProductSize.getLabel(size);
+    },
+    getVariantStatusClass(status) {
+      const config = ProductVariantStatus.getConfig(status);
+      return `${config.color}`;
+    },
+    getVariantStatusLabel(status) {
+      return ProductVariantStatus.getLabel(status);
+    },
   },
   mounted() {
     this.initFilterFromUrl();

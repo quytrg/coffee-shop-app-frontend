@@ -135,6 +135,11 @@
   padding-right: 0.2rem;
 }
 
+.icon .fa-clipboard:hover {
+  color: #148f41;
+  background-color: #eeffe1;
+}
+
 .icon .fa-pen-to-square:hover {
   color: #ff9f43;
   background-color: #fff1e3;

@@ -110,10 +110,10 @@ export const ProductSize = Object.freeze({
   // UI configurations
   configs: {
       S: {
-          color: 'teal',
+          color: 'cyan',
       },
       M: {
-          color: 'cyan',
+          color: 'teal',
       },
       L: {
         color: 'pink',
