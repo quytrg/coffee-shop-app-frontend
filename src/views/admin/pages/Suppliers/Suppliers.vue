@@ -140,9 +140,9 @@
         <div class="card-body">
           <div class="suppliers-action d-flex justify-content-between mb-3">
             <div></div>
-            <!-- <router-link :to="{ name: 'CreateSupplier' }">
+            <router-link :to="{ name: 'CreateSupplier' }">
               <button class="btn btn-main btn-primary">+ New Supplier</button>
-            </router-link> -->
+            </router-link>
           </div>
           <table class="table table-sm mt-3">
             <thead>
