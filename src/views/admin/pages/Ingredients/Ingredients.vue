@@ -1,11 +1,11 @@
 <template>
-  <div class="products fluid-container mx-5" v-if="checkPermission('PRODUCT_VIEW')">
-    <div class="products-wrapper position-relative" v-if="!isFetching">
+  <div class="ingredients fluid-container mx-5" v-if="checkPermission('INGREDIENT_VIEW')">
+    <div class="ingredients-wrapper position-relative" v-if="!isFetching">
       <!-- Tiêu đề -->
-      <div class="products-title my-4 d-flex align-items-center">
+      <div class="ingredients-title my-4 d-flex align-items-center">
         <h4 class="gray-text">Management</h4>
         <h5 class="mx-1">/</h5> 
-        <h4 class="primary-text">Products</h4>
+        <h4 class="primary-text">Ingredients</h4>
       </div>
 
       <!-- Alert -->
@@ -37,29 +37,10 @@
         <div class="card-body">
           <!-- Các trường lọc cơ bản -->
           <div class="row mb-3">
-            <div class="col-lg-4 col-md-12 mb-md-2 mb-lg-0">
-              <v-select
-                :items="statusOptions"
-                label="Status"
-                density="compact"
-                variant="outlined"
-                item-title="label"
-                item-value="value"
-                clearable
-                hide-details
-                v-model="filter.status" 
-              />
-            </div>
-            <div class="col-lg-4 col-md-12 mb-md-2 mb-lg-0">
-              <Select 
-                v-model:selectedValue="filter.categoryIds" 
-                :items="categories" 
-                label="Category"
-              />
-            </div>
-            <div class="col-lg-4 col-md-12">
+            <div class="col-lg-6 col-md-12 mb-md-2 mb-lg-0">
               <Search 
                 v-model:keyword="filter.keyword"
+                placeholder="Search Ingredients..."
               />
             </div>
           </div>
@@ -115,7 +96,7 @@
           <!-- Nút Thực Hiện Lọc -->
           <div class="row mb-3">
             <div class="col-12 text-end">
-              <button @click="getProducts" class="btn btn-success">
+              <button @click="getIngredients" class="btn btn-success">
                 <i class="fa-solid fa-filter"></i> Apply Filters
               </button>
             </div>
@@ -123,24 +104,23 @@
         </div>
       </div>
 
-      <!-- Products List -->
+      <!-- Ingredients List -->
       <div class="card mb-3">
         <div class="card-header d-flex justify-content-between">
-          <h5 class="my-2 d-flex align-items-center">Products</h5>
+          <h5 class="my-2 d-flex align-items-center">Ingredients</h5>
         </div>
         <div class="card-body">
-          <div class="product-action d-flex justify-content-between mb-3">
-            <!-- <ChangeMulti @apply=""/> -->
-             <div></div>
-            <router-link :to="{ name: 'CreateProduct' }">
-              <button class="btn btn-main btn-primary">+ New Product</button>
-            </router-link>
+          <div class="ingredients-action d-flex justify-content-between mb-3">
+            <div></div>
+            <!-- <router-link :to="{ name: 'CreateIngredient' }">
+              <button class="btn btn-main btn-primary">+ New Ingredient</button>
+            </router-link> -->
           </div>
           <table class="table table-sm mt-3">
             <thead>
               <tr>
                 <th>
-                  <input
+                  <input 
                     class="form-check-input" 
                     type="checkbox"
                     name="checkall"
@@ -149,71 +129,52 @@
                   >
                 </th>
                 <th>STT</th>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Position</th>
-                <th>Status</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Default Unit</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody v-if="products.length">
-              <tr v-for="(product, index) in products" :key="product.id">
+            <tbody v-if="ingredients.length">
+              <tr v-for="(ingredient, index) in ingredients" :key="ingredient.id">
                 <td>
                   <input 
-                    class="form-check-input"
+                    class="form-check-input" 
                     type="checkbox"
                     name="id"
-                    :value="product.id"
+                    :value="ingredient.id"
                     v-model="checkedItems[index]"
                   >
                 </td>
                 <td>{{ (page - 1) * 10 + index + 1 }}</td>
+                <td>{{ ingredient.name }}</td>
                 <td>
-                  <div class="thumbnail">
-                    <img 
-                      :src="product.imageUrls[0] ? product.imageUrls[0] : '/default-coffee-image.png'" 
-                      :alt="product.name"
-                    >
-                  </div>
+                  <p v-html="ingredient.description"></p>
                 </td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.categoryName }}</td>
-                <td>
-                  <input 
-                    type="number"
-                    name="position"
-                    v-model="product.position"
-                    :style="{ 
-                      width: '60px', 
-                      padding: '3px', 
-                    }"
-                  >
-                </td>
-                <td>
-                  <v-chip :color="getStatusClass(product.status)">
-                    {{ getStatusLabel(product.status) }}
-                  </v-chip>
-                </td>
+                <td>{{ ingredient.defaultUnit }}</td>
                 <td>
                   <div class="d-flex icon">
                     <div
                       class="cursor-pointer me-2"
-                      @click="viewProductDetail(product.id)"
+                      @click="viewIngredientDetail(ingredient.id)"
                     >
                       <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
                     </div>
-                    <router-link 
-                      :to="{ name: 'ModifyProduct', params: { id: `${product.id}`} }"
+                    
+                    <!-- Edit Ingredient -->
+                    <!-- <router-link 
+                      :to="{ name: 'ModifyIngredient', params: { id: `${ingredient.id}` } }"
                       class="d-flex align-items-center me-2"
-                      title="Modify Product"
+                      title="Modify Ingredient"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link>
+                    </router-link> -->
+                    
+                    <!-- Delete Ingredient -->
                     <div
-                      @click="handleDelete(product.id)"
+                      @click="handleDelete(ingredient.id)"
                       class="cursor-pointer"
-                      title="Delete Product"
+                      title="Delete Ingredient"
                     >
                       <i class="fa-regular fa-trash-can fa-lg fa-fw"></i>
                     </div>
@@ -223,7 +184,7 @@
             </tbody>
             <tbody v-else>
               <tr>
-                <td colspan="8">
+                <td colspan="6">
                   <div class="text-center">
                     No result.
                   </div>
@@ -248,130 +209,62 @@
               </v-row>
             </v-container>
           </div>
-          <!-- Product detail dialog -->
+          <!-- View Ingredient Dialog -->
           <div class="me-2">
             <v-dialog
-              v-model="dialog"
+              v-model="viewDialog"
               max-width="720"
               transition="dialog-top-transition"
             >
               <v-card
-                prepend-icon="mdi-package-variant"
-                title="Product Information"
+                prepend-icon="mdi-information"
+                title="Ingredient Details"
               >
                 <v-card-text>
                   <v-row dense>
-                    <v-col
-                      cols="12"
-                      md="4"
-                      sm="6"
-                    >
+                    <v-col cols="12" md="6" sm="12">
                       <v-text-field
                         label="Name"
                         density="compact"
                         variant="outlined"
-                        v-model="productDetail.name"
+                        v-model="ingredientDetail.name"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
-                    <v-col
-                      cols="12"
-                      md="4"
-                      sm="6"
-                    >
+                    <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Category"
+                        label="Default Unit"
                         density="compact"
                         variant="outlined"
-                        v-model="productDetail.category.name"
+                        v-model="ingredientDetail.defaultUnit"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
-                    <v-col
-                      cols="12"
-                      md="4"
-                      sm="6"
-                    >
-                      <v-text-field
-                        label="Position"
+                    <v-col cols="12" md="12" sm="12">
+                      <v-textarea
+                        label="Description"
+                        row-height="20"
+                        rows="2"
                         density="compact"
                         variant="outlined"
-                        type="number"
-                        v-model="productDetail.position"
+                        auto-grow
+                        v-model="ingredientDetail.description"
                         :readonly="true"
-                      ></v-text-field>
-                    </v-col>
-
-                    <v-col
-                      cols="12"
-                      md="4"
-                      sm="6"
-                    >
-                      <v-select
-                        :items="statusOptions"
-                        label="Status"
-                        density="compact"
-                        variant="outlined"
-                        item-title="label"
-                        item-value="value"
-                        v-model="productDetail.status" 
-                        :readonly="true"
-                      />
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      md="12"
-                      sm="12"
-                    >
-                      <label for="description" class="form-label">Description</label>
-                      <h6 v-html="productDetail.description"></h6>
+                      ></v-textarea>
                     </v-col>
                   </v-row>
-                  <!-- Variant Section -->
-                  <v-divider class="my-4"></v-divider>
-                  <h5 class="mb-4">Variants</h5>
-                  <div v-if="variants.length">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Size</th>
-                          <th>Status</th>
-                          <th>Price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="variant in variants" :key="variant.id">
-                          <td>
-                            <v-chip :color="getProductSizeClass(variant.size)">
-                              {{ getProductSizeLabel(variant.size) }}
-                            </v-chip>
-                          </td>
-                          <td>
-                            <v-chip :color="getVariantStatusClass(variant.status)">
-                              {{ getVariantStatusLabel(variant.status) }}
-                            </v-chip>
-                          </td>
-                          <td>{{ variant.price }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div v-else>
-                    <p>No variants found</p>
-                  </div>
                 </v-card-text>
 
                 <v-divider></v-divider>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-
                   <v-btn
                     text="Close"
                     variant="plain"
-                    @click="dialog = false"
+                    @click="viewDialog = false"
                   ></v-btn>
                 </v-card-actions>
               </v-card>
@@ -380,8 +273,8 @@
         </div>
       </div>
     </div>
-    <div class="products-wrapper" v-else>
-      <!-- Skeleton Loaders khi đang fetch dữ liệu -->
+    <!-- Skeleton Loaders khi đang fetch dữ liệu -->
+    <div class="ingredients-wrapper" v-else>
       <v-row>
         <v-col cols="6">
           <v-skeleton-loader
@@ -471,7 +364,7 @@
           <table class="table table-sm mt-3">
             <thead>
               <tr>
-                <th colspan="12">
+                <th colspan="6">
                   <v-skeleton-loader
                     class="my-0"
                     type="table-row"
@@ -481,7 +374,7 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="12">
+                <td colspan="6">
                   <v-skeleton-loader
                     class="my-0"
                     type="table-row-divider@6"
@@ -509,7 +402,8 @@
       </div>
     </div>
   </div>
-  <div class="product fluid-container mx-5" v-else>
+  <!-- Unauthorized Component -->
+  <div class="ingredients fluid-container mx-5" v-else>
     <Unauthorized />
   </div>
 </template>
@@ -517,39 +411,31 @@
 <script>
 import FilterStatus from '@/components/admin/FilterStatus/FilterStatus.vue'
 import Search from '@/components/admin/Search/Search.vue'
-import ProductService from '@/services/admin/product.service.js'
-import SelectCategory from '@/components/admin/SelectCategory/SelectCategory.vue'
+import ingredientService from '@/services/admin/ingredient.service.js'
 import ChangeMulti from '@/components/admin/ChangeMulti/ChangeMulti.vue'
 import confirmDialogHelper from '@/helpers/admin/dialogs/confirm.helper.js'
 import successDialogHelper from '@/helpers/admin/dialogs/success.helper.js'
 import Unauthorized from '@/components/admin/Unauthorized/Unauthorized.vue'
 import Select from '@/components/admin/Select/Select.vue'
-import CategoryService from '@/services/admin/category.service'
-import { ProductStatus, ProductSortField, ProductSize } from '@/enums/product.enum.js'
-import { SortDirection } from '@/enums/sortDir.enum.js'
-import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
 import { PermissionHelper } from '@/helpers/admin/auth/permission.helper'
-import { CategoryStatus } from '@/enums/category.enum.js'
-import { ProductVariantStatus } from '@/enums/productVariant.enum.js'
+import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
+import { IngredientSortField } from '@/enums/ingredient.enum.js'
+import { SortDirection } from '@/enums/sortDir.enum.js'
 
 export default {
-  name: "Product",
+  name: "Ingredients",
   components: {
     FilterStatus,
     Search,
-    SelectCategory,
     ChangeMulti,
     Unauthorized,
-    Select,
+    Select
   },
   data() {
     return {
-      products: [],
-      categories: [],
+      ingredients: [],
       filter: {
-        status: '',
-        keyword: '',
-        categoryIds: [],
+        keyword: ''
       },
       sortCriteria: [ { sortBy: '', sortDir: '' } ], // Sử dụng sortCriteria
       checkall: false,
@@ -558,29 +444,26 @@ export default {
       totalPages: 0,
       isFetching: true,
       alert: false,
-      statusOptions: ProductStatus.toArray(),
-      sortFieldOptions: ProductSortField.toArray(),
+      sortFieldOptions: IngredientSortField.toArray(),
       sortDirectionOptions: SortDirection.toArray(),
-      dialog: false,
-      productDetail: {
-        name: null,
-        category: null,
-        position: null,
-        status: null,
+      viewDialog: false,
+      ingredientDetail: {
+        name: '',
         description: '',
-      },
-      variants: []
+        defaultUnit: '',
+      }
     }
   },
   methods: {
     checkPermission(permissionName) {
       return PermissionHelper.hasPermission(permissionName)
     },
-    async getProducts() {
+    async getIngredients() {
       const processedFilter = FilterHelper.processFilter(this.filter);
       // Chuyển đổi sortCriteria thành sortBy và sortDir arrays
       const sortBy = this.sortCriteria.map(criteria => criteria.sortBy).filter(Boolean);
       const sortDir = this.sortCriteria.map(criteria => criteria.sortDir).filter(Boolean);
+      console.log(processedFilter, sortBy, sortDir)
       try {
         const params = {
           ...processedFilter,
@@ -591,22 +474,22 @@ export default {
           params.sortBy = sortBy.join(',')
         }
 
-        if (sortBy.sortDir !== 0) {
+        if (sortDir.length !== 0) {
           params.sortDir = sortDir.join(',')
         }
-        console.log(params)
-        const response = await ProductService.get({
+        const response = await ingredientService.getAll({
           params: params
         })
         console.log(response)
-        this.products = response.data.content
+        this.ingredients = response.data.content
         this.totalPages = response.data.page.totalPages
         this.isFetching = false
 
         // update url
         this.updateURL(processedFilter)
-      } catch (error) {
-        console.error(error)
+      }
+      catch (err) {
+        console.log(err)
         this.isFetching = false
       }
     },
@@ -628,23 +511,21 @@ export default {
     },
     handleClear() {
       this.filter = {
-        status: '',
         keyword: '',
-        categoryIds: [],
-      },
+      }
       this.sortCriteria = [ { sortBy: '', sortDir: '' } ] // Reset sortCriteria
-      this.getProducts()
+      this.getIngredients()
     },
     handleCheckAll() {  
-      this.checkedItems = this.products.map(() => this.checkall)
+      this.checkedItems = this.ingredients.map(() => this.checkall)
     },
     async handleDelete(id) {
-      try {
-        if (this.checkPermission('PRODUCT_DELETE')) {
+      try{
+        if (this.checkPermission('INGREDIENT_DELETE')) {
           confirmDialogHelper().then(async (result) => {
             if (result.isConfirmed) {
-              await ProductService.deleteOne(id)
-              this.getProducts()
+              await ingredientService.deleteOne(id)
+              this.getIngredients()
               successDialogHelper()
             }
           });
@@ -660,43 +541,12 @@ export default {
         console.log(err)
       }
     },
-    async getAllCategories() {
-      try {
-        const filter = {
-          params: {
-            size: 50,
-            status: CategoryStatus.ACTIVE
-          }
-        }
-        const result = await CategoryService.getAll(filter)
-        console.log(result)
-        this.categories = result.data.content
-      }
-      catch(err) {
-        console.log(err)
-      }
-    },
-    async getAllVariants(productId) {
-      try {
-        const filter = {
-          params: {
-            size: 50,
-          }
-        }
-        const result = await ProductService.getAllVariants(productId, filter)
-        console.log(result)
-        this.variants = result.data.content
-      }
-      catch(err) {
-        console.log(err)
-      }
-    },
     getStatusClass(status) {
-      const config = ProductStatus.getConfig(status);
+      const config = IngredientStatus.getConfig(status);
       return `${config.color}`;
     },
     getStatusLabel(status) {
-      return ProductStatus.getLabel(status);
+      return IngredientStatus.getLabel(status);
     },
     // Khôi phục filter từ URL khi load page
     initFilterFromUrl() {
@@ -732,46 +582,24 @@ export default {
     handlePageChange(newPage) {
       this.page = newPage;
     },
-    resetProductDetail() {
-      this.productDetail = {
-        name: null,
-        category: null,
-        position: null,
-        status: null,
-        description: '',
+    async viewIngredientDetail(id) {
+      try {
+        const res = await ingredientService.getOne(id);
+        console.log(res)
+        this.ingredientDetail = { 
+          name: res.data.name,
+          description: res.data.description,
+          defaultUnit: res.data.defaultUnit
+        };
+        this.viewDialog = true;
+      } catch (error) {
+        console.error("Error fetching ingredient details:", error);
       }
-    },
-    async viewProductDetail(id) {
-      // reset productDetail variable
-      this.resetProductDetail()
-      // fetch product deltail by id
-      const res = await ProductService.getProductById(id);
-      console.log("Product deltail: ", res)
-      this.productDetail = { ...res.data };
-      // fetch all variants of product
-      await this.getAllVariants(id)
-      // display dialog
-      this.dialog = true;
-    },
-    getProductSizeClass(size) {
-      const config = ProductSize.getConfig(size);
-      return `${config.color}`;
-    },
-    getProductSizeLabel(size) {
-      return ProductSize.getLabel(size);
-    },
-    getVariantStatusClass(status) {
-      const config = ProductVariantStatus.getConfig(status);
-      return `${config.color}`;
-    },
-    getVariantStatusLabel(status) {
-      return ProductVariantStatus.getLabel(status);
-    },
+    }
   },
   mounted() {
-    this.initFilterFromUrl();
-    this.getAllCategories()
-    this.getProducts()
+    this.initFilterFromUrl()
+    this.getIngredients()
   },
   watch: {
     filter: {
@@ -782,26 +610,24 @@ export default {
     },
     sortCriteria: {
       handler() {
-        this.page = 1
       },
       deep: true
     },
     page() {
-      this.getProducts()
+      this.getIngredients()
     }
   },
   computed: {
   }
 }
 </script>
-
 <style scoped lang="scss">
 .sort-criteria-row {
   gap: 8px;
 }
 
-@media (max-width: 960px) {
-  .d-flex:not(.products-title, .card-header) {
+@media (max-width: 767.98px) {
+  .d-flex:not(.ingredients-title, .card-header) {
     flex-direction: column !important;
     align-items: stretch !important;
   }
@@ -818,7 +644,7 @@ export default {
     align-self: flex-end;
   }
 
-  .product-action {
+  .ingredients-action {
     flex-direction: column;
     gap: 10px;
   }

@@ -17,6 +17,7 @@ import Categories from '@/views/admin/pages/Categories/Categories.vue'
 import CreateCategory from '@/views/admin/pages/CreateCategory/CreateCategory.vue'
 import ModifyCategory from '@/views/admin/pages/ModifyCategory/ModifyCategory.vue'
 import Orders from '@/views/admin/pages/Orders/Orders.vue'
+import Ingredients from '@/views/admin/pages/Ingredients/Ingredients.vue'
 
 const adminRouter = [
   {
@@ -112,6 +113,12 @@ const adminRouter = [
         path: "orders",
         name: "Orders",
         component: Orders,
+        meta: { requireAuth: true }
+      },
+      {
+        path: "ingredients",
+        name: "Ingredients",
+        component: Ingredients,
         meta: { requireAuth: true }
       },
     ]
