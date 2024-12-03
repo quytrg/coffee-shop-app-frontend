@@ -112,9 +112,9 @@
         <div class="card-body">
           <div class="ingredients-action d-flex justify-content-between mb-3">
             <div></div>
-            <!-- <router-link :to="{ name: 'CreateIngredient' }">
+            <router-link :to="{ name: 'CreateIngredient' }">
               <button class="btn btn-main btn-primary">+ New Ingredient</button>
-            </router-link> -->
+            </router-link>
           </div>
           <table class="table table-sm mt-3">
             <thead>
@@ -149,7 +149,7 @@
                 <td>{{ (page - 1) * 10 + index + 1 }}</td>
                 <td>{{ ingredient.name }}</td>
                 <td>
-                  <p v-html="ingredient.description"></p>
+                  <p v-html="ingredient.description" class="mt-2"></p>
                 </td>
                 <td>{{ ingredient.defaultUnit }}</td>
                 <td>
