@@ -1,11 +1,11 @@
 <template>
-  <div class="ingredients fluid-container mx-5" v-if="checkPermission('INGREDIENT_VIEW')">
-    <div class="ingredients-wrapper position-relative" v-if="!isFetching">
-      <!-- Tiêu đề -->
-      <div class="ingredients-title my-4 d-flex align-items-center">
+  <div class="suppliers fluid-container mx-5" v-if="checkPermission('SUPPLIER_VIEW')">
+    <div class="suppliers-wrapper position-relative" v-if="!isFetching">
+      <!-- Title -->
+      <div class="suppliers-title my-4 d-flex align-items-center">
         <h4 class="gray-text">Management</h4>
         <h5 class="mx-1">/</h5> 
-        <h4 class="primary-text">Ingredients</h4>
+        <h4 class="primary-text">Suppliers</h4>
       </div>
 
       <!-- Alert -->
@@ -35,17 +35,45 @@
           </div>
         </div>
         <div class="card-body">
-          <!-- Các trường lọc cơ bản -->
+          <!-- Basic Filters -->
           <div class="row mb-3">
             <div class="col-lg-6 col-md-12 mb-md-2 mb-lg-0">
               <Search 
                 v-model:keyword="filter.keyword"
-                placeholder="Search Ingredients..."
+                placeholder="Search Suppliers..."
               />
             </div>
           </div>
-
-          <!-- Các tiêu chí sắp xếp động -->
+          <!-- Expanded Filters -->
+          <v-expansion-panels class="mb-5">
+            <v-expansion-panel title="Advanced Filters">
+              <v-expansion-panel-text>
+                <div class="row">
+                  <div class="col-lg-6 col-md-12 mb-md-2 mb-lg-0">
+                    <v-text-field
+                      label="Min Rating"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.minRating"
+                      :rules="[value => value == null || (value >= 0 && value <= 10 || 'Rating cannot exceed 10.00')]"
+                    ></v-text-field>
+                  </div>
+                  <div class="col-lg-6 col-md-12">
+                    <v-text-field
+                      label="Max Rating"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.maxRating"
+                      :rules="[value => value == null || (value >= 0 && value <= 10 || 'Rating cannot exceed 10.00')]"
+                    ></v-text-field>
+                  </div>
+                </div>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+          <!-- Dynamic Sort Criteria -->
           <div class="row mb-3">
             <div class="col-12">
               <h5>Sort Criteria</h5>
@@ -93,10 +121,10 @@
             </div>
           </div>
 
-          <!-- Nút Thực Hiện Lọc -->
+          <!-- Apply Filters Button -->
           <div class="row mb-3">
             <div class="col-12 text-end">
-              <button @click="getIngredients" class="btn btn-success">
+              <button @click="getSuppliers" class="btn btn-success">
                 <i class="fa-solid fa-filter"></i> Apply Filters
               </button>
             </div>
@@ -104,17 +132,17 @@
         </div>
       </div>
 
-      <!-- Ingredients List -->
+      <!-- Suppliers List -->
       <div class="card mb-3">
         <div class="card-header d-flex justify-content-between">
-          <h5 class="my-2 d-flex align-items-center">Ingredients</h5>
+          <h5 class="my-2 d-flex align-items-center">Suppliers</h5>
         </div>
         <div class="card-body">
-          <div class="ingredients-action d-flex justify-content-between mb-3">
+          <div class="suppliers-action d-flex justify-content-between mb-3">
             <div></div>
-            <router-link :to="{ name: 'CreateIngredient' }">
-              <button class="btn btn-main btn-primary">+ New Ingredient</button>
-            </router-link>
+            <!-- <router-link :to="{ name: 'CreateSupplier' }">
+              <button class="btn btn-main btn-primary">+ New Supplier</button>
+            </router-link> -->
           </div>
           <table class="table table-sm mt-3">
             <thead>
@@ -130,51 +158,55 @@
                 </th>
                 <th>STT</th>
                 <th>Name</th>
-                <th>Description</th>
-                <th>Default Unit</th>
+                <th>Address</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Rating</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody v-if="ingredients.length">
-              <tr v-for="(ingredient, index) in ingredients" :key="ingredient.id">
+            <tbody v-if="suppliers.length">
+              <tr v-for="(supplier, index) in suppliers" :key="supplier.id">
                 <td>
                   <input 
                     class="form-check-input" 
                     type="checkbox"
                     name="id"
-                    :value="ingredient.id"
+                    :value="supplier.id"
                     v-model="checkedItems[index]"
                   >
                 </td>
                 <td>{{ (page - 1) * 10 + index + 1 }}</td>
-                <td>{{ ingredient.name }}</td>
-                <td>
-                  <p v-html="ingredient.description" class="mt-2"></p>
-                </td>
-                <td>{{ ingredient.defaultUnit }}</td>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.address }}</td>
+                <td>{{ supplier.phoneNumber }}</td>
+                <td>{{ supplier.email }}</td>
+                <td>{{ supplier.rating }}</td>
                 <td>
                   <div class="d-flex icon">
+                    <!-- View Supplier Details -->
                     <div
                       class="cursor-pointer me-2"
-                      @click="viewIngredientDetail(ingredient.id)"
+                      @click="viewSupplierDetail(supplier.id)"
+                      title="View Supplier"
                     >
                       <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
                     </div>
                     
-                    <!-- Edit Ingredient -->
-                    <router-link 
-                      :to="{ name: 'ModifyIngredient', params: { id: `${ingredient.id}` } }"
+                    <!-- Edit Supplier -->
+                    <!-- <router-link 
+                      :to="{ name: 'ModifySupplier', params: { id: `${supplier.id}` } }"
                       class="d-flex align-items-center me-2"
-                      title="Modify Ingredient"
+                      title="Modify Supplier"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link>
+                    </router-link> -->
                     
-                    <!-- Delete Ingredient -->
+                    <!-- Delete Supplier -->
                     <div
-                      @click="handleDelete(ingredient.id)"
+                      @click="handleDelete(supplier.id)"
                       class="cursor-pointer"
-                      title="Delete Ingredient"
+                      title="Delete Supplier"
                     >
                       <i class="fa-regular fa-trash-can fa-lg fa-fw"></i>
                     </div>
@@ -184,7 +216,7 @@
             </tbody>
             <tbody v-else>
               <tr>
-                <td colspan="6">
+                <td colspan="8">
                   <div class="text-center">
                     No result.
                   </div>
@@ -209,7 +241,7 @@
               </v-row>
             </v-container>
           </div>
-          <!-- View Ingredient Dialog -->
+          <!-- View Supplier Dialog -->
           <div class="me-2">
             <v-dialog
               v-model="viewDialog"
@@ -218,7 +250,7 @@
             >
               <v-card
                 prepend-icon="mdi-information"
-                title="Ingredient Details"
+                title="Supplier Details"
               >
                 <v-card-text>
                   <v-row dense>
@@ -227,44 +259,99 @@
                         label="Name"
                         density="compact"
                         variant="outlined"
-                        v-model="ingredientDetail.name"
+                        v-model="supplierDetail.name"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Default Unit"
+                        label="Address"
                         density="compact"
                         variant="outlined"
-                        v-model="ingredientDetail.defaultUnit"
+                        v-model="supplierDetail.address"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
-                    <v-col cols="12" md="12" sm="12">
-                      <v-textarea
-                        label="Description"
-                        row-height="20"
-                        rows="2"
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Phone Number"
                         density="compact"
                         variant="outlined"
-                        auto-grow
-                        v-model="ingredientDetail.description"
+                        v-model="supplierDetail.phoneNumber"
                         :readonly="true"
-                      ></v-textarea>
+                      ></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                      <v-textarea
-                        label="Storage Instructions"
-                        row-height="20"
-                        rows="2"
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Email"
                         density="compact"
                         variant="outlined"
-                        auto-grow
-                        v-model="ingredientDetail.storageInstructions"
+                        v-model="supplierDetail.email"
                         :readonly="true"
-                      ></v-textarea>
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Rating"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.rating"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Description"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.description"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Other Contact Info"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.otherContactInfo"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Tax Code"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.taxCode"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Bank Account"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.bankAccount"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Payment Terms"
+                        density="compact"
+                        variant="outlined"
+                        v-model="supplierDetail.paymentTerms"
+                        :readonly="true"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -282,11 +369,11 @@
               </v-card>
             </v-dialog>
           </div>
-        </div>
-      </div>
+        </div>   
+      </div>     
     </div>
-    <!-- Skeleton Loaders khi đang fetch dữ liệu -->
-    <div class="ingredients-wrapper" v-else>
+    <!-- Skeleton Loaders while fetching data -->
+    <div class="suppliers-wrapper" v-else>
       <v-row>
         <v-col cols="6">
           <v-skeleton-loader
@@ -376,7 +463,7 @@
           <table class="table table-sm mt-3">
             <thead>
               <tr>
-                <th colspan="6">
+                <th colspan="8">
                   <v-skeleton-loader
                     class="my-0"
                     type="table-row"
@@ -386,10 +473,10 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="6">
+                <td colspan="8">
                   <v-skeleton-loader
                     class="my-0"
-                    type="table-row-divider@6"
+                    type="table-row-divider@8"
                   ></v-skeleton-loader>
                 </td>
               </tr>
@@ -415,65 +502,76 @@
     </div>
   </div>
   <!-- Unauthorized Component -->
-  <div class="ingredients fluid-container mx-5" v-else>
+  <div class="suppliers fluid-container mx-5" v-else>
     <Unauthorized />
   </div>
 </template>
 
 <script>
-import FilterStatus from '@/components/admin/FilterStatus/FilterStatus.vue'
 import Search from '@/components/admin/Search/Search.vue'
-import ingredientService from '@/services/admin/ingredient.service.js'
-import ChangeMulti from '@/components/admin/ChangeMulti/ChangeMulti.vue'
+import supplierService from '@/services/admin/supplier.service.js'
 import confirmDialogHelper from '@/helpers/admin/dialogs/confirm.helper.js'
 import successDialogHelper from '@/helpers/admin/dialogs/success.helper.js'
 import Unauthorized from '@/components/admin/Unauthorized/Unauthorized.vue'
-import Select from '@/components/admin/Select/Select.vue'
 import { PermissionHelper } from '@/helpers/admin/auth/permission.helper'
 import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
-import { IngredientSortField } from '@/enums/ingredient.enum.js'
+import { SupplierSortField } from '@/enums/supplier.enum.js'
 import { SortDirection } from '@/enums/sortDir.enum.js'
 
 export default {
-  name: "Ingredients",
+  name: "Suppliers",
   components: {
-    FilterStatus,
     Search,
-    ChangeMulti,
     Unauthorized,
-    Select
   },
   data() {
     return {
-      ingredients: [],
+      suppliers: [],
       filter: {
-        keyword: ''
+        keyword: '',
+        minRating: null,
+        maxRating: null
       },
-      sortCriteria: [ { sortBy: '', sortDir: '' } ], // Sử dụng sortCriteria
+      sortCriteria: [ { sortBy: '', sortDir: '' } ], // Use sortCriteria
       checkall: false,
       checkedItems: [],
       page: 1,
       totalPages: 0,
       isFetching: true,
       alert: false,
-      sortFieldOptions: IngredientSortField.toArray(),
+      sortFieldOptions: SupplierSortField.toArray(),
       sortDirectionOptions: SortDirection.toArray(),
       viewDialog: false,
-      ingredientDetail: {
+      supplierDetail: {
         name: '',
         description: '',
-        storageInstructions: '',
-        defaultUnit: '',
+        address: '',
+        phoneNumber: '',
+        email: '',
+        otherContactInfo: '',
+        taxCode: '',
+        bankAccount: '',
+        paymentTerms: '',
+        rating: null,
       }
     }
   },
   methods: {
+    /**
+     * Checks if the user has the required permission.
+     * @param {String} permissionName - The name of the permission to check.
+     * @returns {Boolean}
+     */
     checkPermission(permissionName) {
       return PermissionHelper.hasPermission(permissionName)
     },
-    async getIngredients() {
+
+    /**
+     * Fetches the list of suppliers with applied filters and sorting.
+     */
+    async getSuppliers() {
       const processedFilter = FilterHelper.processFilter(this.filter);
-      // Chuyển đổi sortCriteria thành sortBy và sortDir arrays
+      // Convert sortCriteria into sortBy and sortDir arrays
       const sortBy = this.sortCriteria.map(criteria => criteria.sortBy).filter(Boolean);
       const sortDir = this.sortCriteria.map(criteria => criteria.sortDir).filter(Boolean);
       console.log(processedFilter, sortBy, sortDir)
@@ -490,11 +588,11 @@ export default {
         if (sortDir.length !== 0) {
           params.sortDir = sortDir.join(',')
         }
-        const response = await ingredientService.getAll({
+        const response = await supplierService.getAll({
           params: params
         })
         console.log(response)
-        this.ingredients = response.data.content
+        this.suppliers = response.data.content
         this.totalPages = response.data.page.totalPages
         this.isFetching = false
 
@@ -504,8 +602,14 @@ export default {
       catch (err) {
         console.log(err)
         this.isFetching = false
+        // Optionally, display an error message to the user
       }
     },
+
+    /**
+     * Updates the URL with current filters and sorting parameters.
+     * @param {Object} processedFilter - The processed filter object.
+     */
     updateURL(processedFilter) {
       const query = {
         ...processedFilter,
@@ -522,23 +626,38 @@ export default {
 
       this.$router.push({ query });
     },
+
+    /**
+     * Clears all filters and resets sort criteria.
+     */
     handleClear() {
       this.filter = {
         keyword: '',
+        minRating: null,
+        maxRating: null
       }
       this.sortCriteria = [ { sortBy: '', sortDir: '' } ] // Reset sortCriteria
-      this.getIngredients()
+      this.getSuppliers()
     },
+
+    /**
+     * Handles the "Check All" functionality.
+     */
     handleCheckAll() {  
-      this.checkedItems = this.ingredients.map(() => this.checkall)
+      this.checkedItems = this.suppliers.map(() => this.checkall)
     },
+
+    /**
+     * Deletes a supplier after confirmation.
+     * @param {Number} id - The ID of the supplier to delete.
+     */
     async handleDelete(id) {
       try{
-        if (this.checkPermission('INGREDIENT_DELETE')) {
+        if (this.checkPermission('SUPPLIER_DELETE')) {
           confirmDialogHelper().then(async (result) => {
             if (result.isConfirmed) {
-              await ingredientService.deleteOne(id)
-              this.getIngredients()
+              await supplierService.deleteOne(id)
+              this.getSuppliers()
               successDialogHelper()
             }
           });
@@ -552,21 +671,18 @@ export default {
       }
       catch (err) {
         console.log(err)
+        // Optionally, display an error message to the user
       }
     },
-    getStatusClass(status) {
-      const config = IngredientStatus.getConfig(status);
-      return `${config.color}`;
-    },
-    getStatusLabel(status) {
-      return IngredientStatus.getLabel(status);
-    },
-    // Khôi phục filter từ URL khi load page
+
+    /**
+     * Initializes filters from URL parameters when the page loads.
+     */
     initFilterFromUrl() {
       const searchParams = new URLSearchParams(window.location.search);
       this.filter = FilterHelper.parseFilterFromUrl(searchParams);
       
-      // Khôi phục sortCriteria từ URL
+      // Restore sortCriteria from URL
       const sortByParam = searchParams.get('sortBy');
       const sortDirParam = searchParams.get('sortDir');
       if (sortByParam && sortDirParam) {
@@ -581,38 +697,61 @@ export default {
         this.sortCriteria = [ { sortBy: '', sortDir: '' } ];
       }
     },
-    // Thêm tiêu chí sắp xếp
+
+    /**
+     * Adds a new sort criteria row.
+     */
     addSortCriteria() {
       this.sortCriteria.push({ sortBy: '', sortDir: '' });
     },
-    // Xóa tiêu chí sắp xếp
+
+    /**
+     * Removes a sort criteria row at a specific index.
+     * @param {Number} index - The index of the sort criteria to remove.
+     */
     removeSortCriteria(index) {
       if (this.sortCriteria.length > 1) {
         this.sortCriteria.splice(index, 1);
       }
     },
-    // Xử lý thay đổi trang
+
+    /**
+     * Handles page changes for pagination.
+     * @param {Number} newPage - The new page number.
+     */
     handlePageChange(newPage) {
       this.page = newPage;
     },
-    async viewIngredientDetail(id) {
+
+    /**
+     * Fetches and displays supplier details in a dialog.
+     * @param {Number} id - The ID of the supplier to view.
+     */
+    async viewSupplierDetail(id) {
       try {
-        const res = await ingredientService.getOne(id);
+        const res = await supplierService.getOne(id);
         console.log(res)
-        this.ingredientDetail = { 
+        this.supplierDetail = { 
           name: res.data.name,
           description: res.data.description,
-          defaultUnit: res.data.defaultUnit
+          address: res.data.address,
+          phoneNumber: res.data.phoneNumber,
+          email: res.data.email,
+          otherContactInfo: res.data.otherContactInfo,
+          taxCode: res.data.taxCode,
+          bankAccount: res.data.bankAccount,
+          paymentTerms: res.data.paymentTerms,
+          rating: res.data.rating,
         };
         this.viewDialog = true;
       } catch (error) {
-        console.error("Error fetching ingredient details:", error);
+        console.error("Error fetching supplier details:", error);
       }
     }
   },
   mounted() {
     this.initFilterFromUrl()
-    this.getIngredients()
+    this.getSuppliers()
   },
   watch: {
     filter: {
@@ -627,20 +766,21 @@ export default {
       deep: true
     },
     page() {
-      this.getIngredients()
+      this.getSuppliers()
     }
   },
   computed: {
   }
 }
 </script>
+
 <style scoped lang="scss">
 .sort-criteria-row {
   gap: 8px;
 }
 
 @media (max-width: 767.98px) {
-  .d-flex:not(.ingredients-title, .card-header) {
+  .d-flex:not(.suppliers-title, .card-header) {
     flex-direction: column !important;
     align-items: stretch !important;
   }
@@ -657,7 +797,7 @@ export default {
     align-self: flex-end;
   }
 
-  .ingredients-action {
+  .suppliers-action {
     flex-direction: column;
     gap: 10px;
   }

@@ -20,6 +20,7 @@ import Orders from '@/views/admin/pages/Orders/Orders.vue'
 import Ingredients from '@/views/admin/pages/Ingredients/Ingredients.vue'
 import CreateIngredient from '@/views/admin/pages/CreateIngredient/CreateIngredient.vue'
 import ModifyIngredient from '@/views/admin/pages/ModifyIngredient/ModifyIngredient.vue'
+import Suppliers from '@/views/admin/pages/Suppliers/Suppliers.vue'
 
 const adminRouter = [
   {
@@ -133,6 +134,12 @@ const adminRouter = [
         path: "ingredients/modify/:id",
         name: "ModifyIngredient",
         component: ModifyIngredient,
+        meta: { requireAuth: true }
+      },
+      {
+        path: "suppliers",
+        name: "Suppliers",
+        component: Suppliers,
         meta: { requireAuth: true }
       },
     ]

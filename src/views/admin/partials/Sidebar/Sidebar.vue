@@ -36,6 +36,7 @@ export default {
         { link: { name: 'ProductsAdmin' }, name: 'Products', tooltip: 'Products', icon: 'bxl-dropbox' },
         { link: { name: 'Categories' }, name: 'Categories', tooltip: 'Categories', icon: 'bx bx-collection' },
         { link: { name: 'Ingredients' }, name: 'Ingredient', tooltip: 'Ingredient', icon: 'bx bxs-shapes' },
+        { link: { name: 'Suppliers' }, name: 'Supplier', tooltip: 'Supplier', icon: 'bx bx-home' },
         { link: { name: 'Accounts' }, name: 'Accounts', tooltip: 'Accounts', icon: 'bx-user' },
         { link: { name: 'Roles' }, name: 'Roles', tooltip: 'Roles', icon: 'bx bxs-user-account' },
         { link: { name: 'Permissions' }, name: 'Permissions', tooltip: 'Permissions', icon: 'bx bx-lock' },
