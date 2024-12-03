@@ -194,13 +194,13 @@
                     </div>
                     
                     <!-- Edit Supplier -->
-                    <!-- <router-link 
+                    <router-link 
                       :to="{ name: 'ModifySupplier', params: { id: `${supplier.id}` } }"
                       class="d-flex align-items-center me-2"
                       title="Modify Supplier"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link> -->
+                    </router-link>
                     
                     <!-- Delete Supplier -->
                     <div

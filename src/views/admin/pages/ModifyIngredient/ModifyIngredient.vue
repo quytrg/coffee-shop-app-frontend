@@ -1,6 +1,7 @@
 <template>
   <div class="modify-ingredient" v-if="checkPermission('INGREDIENT_EDIT')">
     <IngredientForm
+      v-if="ingredient"
       :ingredient="ingredient"
       @submit:ingredient="modifyIngredient"
       pageTitle="Modify Ingredient"
@@ -27,13 +28,7 @@ export default {
   },
   data() {
     return {
-      ingredient: {
-        id: null,
-        name: '',
-        description: '',
-        storageInstructions: '',
-        defaultUnit: null,
-      },
+      ingredient: null,
       isLoading: true,
     };
   },
