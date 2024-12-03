@@ -162,13 +162,13 @@
                     </div>
                     
                     <!-- Edit Ingredient -->
-                    <!-- <router-link 
+                    <router-link 
                       :to="{ name: 'ModifyIngredient', params: { id: `${ingredient.id}` } }"
                       class="d-flex align-items-center me-2"
                       title="Modify Ingredient"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link> -->
+                    </router-link>
                     
                     <!-- Delete Ingredient -->
                     <div
