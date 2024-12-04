@@ -179,6 +179,14 @@
                 </td>
                 <td>
                   <div class="d-flex icon">
+                    <!-- View Category Details -->
+                    <div
+                      class="cursor-pointer me-2"
+                      @click="viewCategoryDetail(category.id)"
+                      title="View Category"
+                    >
+                      <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
+                    </div>
                     <router-link 
                       :to="{ name: 'ModifyCategory', params: { id: `${category.id}` } }"
                       class="d-flex align-items-center me-2"
@@ -223,6 +231,61 @@
                 </v-col>
               </v-row>
             </v-container>
+          </div>
+
+          <!-- View Supplier Dialog -->
+          <div class="me-2">
+            <v-dialog
+              v-model="viewDialog"
+              max-width="720"
+              transition="dialog-top-transition"
+            >
+              <v-card
+                prepend-icon="mdi-information"
+                title="Category Details"
+              >
+                <v-card-text>
+                  <v-row dense>
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Name"
+                        density="compact"
+                        variant="outlined"
+                        v-model="categoryDetail.name"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" sm="12">
+                      <v-select
+                        :items="statusOptions"
+                        label="Status"
+                        density="compact"
+                        variant="outlined"
+                        item-title="label"
+                        item-value="value"
+                        v-model="categoryDetail.status" 
+                        :readonly="true"
+                      />
+                    </v-col>
+                    <v-col cols="12" md="12" sm="12">
+                      <label for="description" class="form-label">Description</label>
+                      <h6 v-html="categoryDetail.description"></h6>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    text="Close"
+                    variant="plain"
+                    @click="viewDialog = false"
+                  ></v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
         </div>
       </div>
@@ -403,6 +466,12 @@ export default {
       statusOptions: CategoryStatus.toArray(),
       sortFieldOptions: CategorySortField.toArray(),
       sortDirectionOptions: SortDirection.toArray(),
+      viewDialog: false,
+      categoryDetail: {
+        name: '',
+        status: '',
+        description: '',
+      }
     }
   },
   methods: {
@@ -534,6 +603,24 @@ export default {
     // Xử lý thay đổi trang
     handlePageChange(newPage) {
       this.page = newPage;
+    },
+        /**
+     * Fetches and displays category details in a dialog.
+     * @param {Number} id - The ID of the category to view.
+     */
+     async viewCategoryDetail(id) {
+      try {
+        const res = await categoryService.getOne(id);
+        console.log(res)
+        this.categoryDetail = { 
+          name: res.data.name,
+          status: res.data.status,
+          description: res.data.description,
+        };
+        this.viewDialog = true;
+      } catch (error) {
+        console.error("Error fetching category details:", error);
+      }
     }
   },
   mounted() {

@@ -150,7 +150,7 @@
                 </th>
                 <th>STT</th>
                 <th>Image</th>
-                <th>Title</th>
+                <th>Name</th>
                 <th>Category</th>
                 <th>Position</th>
                 <th>Status</th>
@@ -256,8 +256,8 @@
               transition="dialog-top-transition"
             >
               <v-card
-                prepend-icon="mdi-package-variant"
-                title="Product Information"
+                prepend-icon="mdi-information"
+                title="Product Details"
               >
                 <v-card-text>
                   <v-row dense>
