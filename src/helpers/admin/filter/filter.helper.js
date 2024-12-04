@@ -45,7 +45,7 @@ export class FilterHelper {
         }
 
         // Kiểm tra object rỗng
-        if (typeof value === 'object' && !Array.isArray(value) && 
+        if (typeof value === 'object' && !(value instanceof Date) && !Array.isArray(value) && 
             Object.keys(value).length === 0) {
             return false;
         }
@@ -64,7 +64,7 @@ export class FilterHelper {
 
         // Xử lý date
         if (value instanceof Date) {
-            return value.toISOString();
+            return value.toISOString().split('Z')[0];
         }
 
         // Xử lý object

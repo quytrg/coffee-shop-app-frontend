@@ -353,7 +353,7 @@
                               {{ getVariantStatusLabel(variant.status) }}
                             </v-chip>
                           </td>
-                          <td>{{ variant.price }}</td>
+                          <td>${{ variant.price }}</td>
                         </tr>
                       </tbody>
                     </table>

@@ -134,7 +134,7 @@
                           {{ getVariantStatusLabel(variant.status) }}
                         </v-chip>
                       </td>
-                      <td>{{ variant.price }}</td>
+                      <td>${{ variant.price }}</td>
                       <td>
                         <div class="d-flex">
                           <div class="cursor-pointer" @click="viewVariant(variant.id)">

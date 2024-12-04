@@ -23,6 +23,7 @@ import ModifyIngredient from '@/views/admin/pages/ModifyIngredient/ModifyIngredi
 import Suppliers from '@/views/admin/pages/Suppliers/Suppliers.vue'
 import CreateSupplier from '@/views/admin/pages/CreateSupplier/CreateSupplier.vue'
 import ModifySupplier from '@/views/admin/pages/ModifySupplier/ModifySupplier.vue'
+import SupplyOrders from '@/views/admin/pages/SupplyOrders/SupplyOrders.vue'
 
 const adminRouter = [
   {
@@ -154,6 +155,12 @@ const adminRouter = [
         path: "suppliers/modify/:id",
         name: "ModifySupplier",
         component: ModifySupplier,
+        meta: { requireAuth: true }
+      },
+      {
+        path: "supplyorders",
+        name: "SupplyOrders",
+        component: SupplyOrders,
         meta: { requireAuth: true }
       },
     ]
