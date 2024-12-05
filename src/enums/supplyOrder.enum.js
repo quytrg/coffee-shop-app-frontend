@@ -9,7 +9,7 @@ export const SupplyOrderStatus = Object.freeze({
   RETURNED: 'RETURNED',
   // Display labels
   labels: {
-    PENDING: 'Peding',
+    PENDING: 'Pending',
     CONFIRMED: 'Confirmed',
     SHIPPING: 'Shipping',
     DELIVERED: 'Delivered',

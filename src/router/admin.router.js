@@ -24,6 +24,7 @@ import Suppliers from '@/views/admin/pages/Suppliers/Suppliers.vue'
 import CreateSupplier from '@/views/admin/pages/CreateSupplier/CreateSupplier.vue'
 import ModifySupplier from '@/views/admin/pages/ModifySupplier/ModifySupplier.vue'
 import SupplyOrders from '@/views/admin/pages/SupplyOrders/SupplyOrders.vue'
+import CreateSupplyOrder from '@/views/admin/pages/CreateSupplyOrder/CreateSupplyOrder.vue'
 
 const adminRouter = [
   {
@@ -158,9 +159,15 @@ const adminRouter = [
         meta: { requireAuth: true }
       },
       {
-        path: "supplyorders",
+        path: "supply-orders",
         name: "SupplyOrders",
         component: SupplyOrders,
+        meta: { requireAuth: true }
+      },
+      {
+        path: "supply-orders/create",
+        name: "CreateSupplyOrder",
+        component: CreateSupplyOrder,
         meta: { requireAuth: true }
       },
     ]
