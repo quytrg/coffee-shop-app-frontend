@@ -64,7 +64,9 @@ export class FilterHelper {
 
         // Xử lý date
         if (value instanceof Date) {
-            return value.toISOString().split('Z')[0];
+            const offset = value.getTimezoneOffset();
+            const localDate = new Date(value.getTime() - (offset * 60000));
+            return localDate.toISOString().slice(0, 19);
         }
 
         // Xử lý object

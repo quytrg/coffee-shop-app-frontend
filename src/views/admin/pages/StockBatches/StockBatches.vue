@@ -1,11 +1,11 @@
 <template>
-  <div class="supply-orders fluid-container mx-5" v-if="checkPermission('SUPPLY_ORDER_VIEW')">
-    <div class="supply-orders-wrapper position-relative" v-if="!isFetching">
+  <div class="stock-batches fluid-container mx-5" v-if="checkPermission('STOCK_BATCH_VIEW')">
+    <div class="stock-batches-wrapper position-relative" v-if="!isFetching">
       <!-- Title -->
-      <div class="supply-orders-title my-4 d-flex align-items-center">
+      <div class="stock-batches-title my-4 d-flex align-items-center">
         <h4 class="gray-text">Management</h4>
         <h5 class="mx-1">/</h5> 
-        <h4 class="primary-text">Supply Orders</h4>
+        <h4 class="primary-text">Stock Batches</h4>
       </div>
 
       <!-- Alert -->
@@ -49,67 +49,19 @@
             <v-expansion-panel title="Advanced Filters">
               <v-expansion-panel-text>
                 <div class="row">
-                  <!-- Min Total Amount -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-text-field
-                      label="Min Total Amount"
-                      density="compact"
-                      variant="outlined"
-                      type="number"
-                      prefix="$"
-                      v-model="filter.minTotalAmount"
-                      :rules="[value => value == null || value >= 0 || 'Total amount must be non-negative']"
-                    ></v-text-field>
-                  </div>
-                  <!-- Max Total Amount -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-text-field
-                      label="Max Total Amount"
-                      density="compact"
-                      variant="outlined"
-                      type="number"
-                      prefix="$"
-                      v-model="filter.maxTotalAmount"
-                      :rules="[value => value == null || value >= 0 || 'Total amount must be non-negative']"
-                    ></v-text-field>
-                  </div>
-                  <!-- Status -->
+                  <!-- Ingredient -->
                   <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
                     <v-select
-                      :items="statusOptions"
-                      label="Status"
+                      :items="ingredientOptions"
+                      label="Ingredients"
                       density="compact"
                       variant="outlined"
-                      item-title="label"
-                      item-value="value"
+                      item-title="name"
+                      item-value="id"
+                      multiple
+                      chips
                       clearable
-                      v-model="filter.status"
-                    />
-                  </div>
-                  <!-- Payment Method -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-select
-                      :items="paymentMethodOptions"
-                      label="Payment Method"
-                      density="compact"
-                      variant="outlined"
-                      item-title="label"
-                      item-value="value"
-                      clearable
-                      v-model="filter.paymentMethod"
-                    />
-                  </div>
-                  <!-- Payment Status -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-select
-                      :items="paymentStatusOptions"
-                      label="Payment Status"
-                      density="compact"
-                      variant="outlined"
-                      item-title="label"
-                      item-value="value"
-                      clearable
-                      v-model="filter.paymentStatus"
+                      v-model="filter.ingredientIds"
                     />
                   </div>
                   <!-- Supplier -->
@@ -127,77 +79,115 @@
                       v-model="filter.supplierIds"
                     />
                   </div>
-                  <!-- Expected Delivery Date From -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-date-input
-                      clearable 
-                      label="Expected Delivery Date From" 
-                      variant="solo" 
-                      prepend-icon=""
-                      prepend-inner-icon="$calendar"
-                      density="compact"
-                      v-model="filter.expectedDeliveryDateFrom"
-                    >
-                    </v-date-input>
-                  </div>
-                  <!-- Expected Delivery Date To -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-date-input
-                      clearable 
-                      label="Expected Delivery Date To" 
-                      variant="solo" 
-                      prepend-icon=""
-                      prepend-inner-icon="$calendar"
-                      density="compact"
-                      v-model="filter.expectedDeliveryDateTo"
-                    >
-                    </v-date-input>
-                  </div>
-                  <div class="col-lg-4 mb-md-2 mb-lg-0"></div>
-                  <!-- Actual Delivery Date From -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-date-input
-                      clearable 
-                      label="Actual Delivery Date From" 
-                      variant="solo" 
-                      prepend-icon=""
-                      prepend-inner-icon="$calendar"
-                      density="compact"
-                      v-model="filter.actualDeliveryDateFrom"
-                    >
-                    </v-date-input>
-                  </div>
-                  <!-- Actual Delivery Date To -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
-                    <v-date-input
-                      clearable 
-                      label="Actual Delivery Date To" 
-                      variant="solo" 
-                      prepend-icon=""
-                      prepend-inner-icon="$calendar"
-                      density="compact"
-                      v-model="filter.actualDeliveryDateTo"
-                    >
-                    </v-date-input>
-                  </div>
-                  <div class="col-lg-4 mb-md-2 mb-lg-0"></div>
-                  <!-- Ingredients -->
+                  <!-- Status -->
                   <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
                     <v-select
-                      :items="ingredientOptions"
-                      label="Ingredients"
+                      :items="measurementUnitOptions"
+                      label="Unit"
                       density="compact"
                       variant="outlined"
-                      item-title="name"
-                      item-value="id"
-                      multiple
-                      chips
+                      item-title="label"
+                      item-value="value"
                       clearable
-                      hide-details
-                      v-model="filter.ingredientIds"
+                      v-model="filter.defaultUnit"
                     />
                   </div>
-                 
+                  <div class="col-lg-0 mb-md-2 mb-lg-0"></div>
+                  <!-- Received Date From -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-date-input
+                      clearable 
+                      label="Received Date From" 
+                      variant="solo" 
+                      prepend-icon=""
+                      prepend-inner-icon="$calendar"
+                      density="compact"
+                      v-model="filter.receivedDateFrom"
+                    />
+                  </div>
+                  <!-- Received Date To -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-date-input
+                      clearable 
+                      label="Received Date To" 
+                      variant="solo" 
+                      prepend-icon=""
+                      prepend-inner-icon="$calendar"
+                      density="compact"
+                      v-model="filter.receivedDateTo"
+                    />
+                  </div>
+                  <div class="col-lg-4 mb-md-2 mb-lg-0"></div>
+                  <!-- Expiration Date From -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-date-input
+                      clearable 
+                      label="Expiration Date From" 
+                      variant="solo" 
+                      prepend-icon=""
+                      prepend-inner-icon="$calendar"
+                      density="compact"
+                      v-model="filter.expirationDateFrom"
+                    />
+                  </div>
+                  <!-- Expiration Date To -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-date-input
+                      clearable 
+                      label="Expiration Date To" 
+                      variant="solo" 
+                      prepend-icon=""
+                      prepend-inner-icon="$calendar"
+                      density="compact"
+                      v-model="filter.expirationDateTo"
+                    />
+                  </div>
+                  <div class="col-lg-4 mb-md-2 mb-lg-0"></div>
+                  <!-- Initial Quantity From -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-text-field
+                      label="Initial Quantity From"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.minInitialQuantity"
+                      :rules="[value => value == null || value >= 0 || 'Initial quantity must be non-negative']"
+                    ></v-text-field>
+                  </div>
+                  <!-- Initial Quantity To -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-text-field
+                      label="Initial Quantity To"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.maxInitialQuantity"
+                      :rules="[value => value == null || value >= 0 || 'Initial quantity must be non-negative']"
+                    ></v-text-field>
+                  </div>
+                  <div class="col-lg-4 mb-md-2 mb-lg-0"></div>
+                  <!-- Remaining Quantity From -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-text-field
+                      label="Remaining Quantity From"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.minRemainingQuantity"
+                      :rules="[value => value == null || value >= 0 || 'Remaining quantity must be non-negative']"
+                    ></v-text-field>
+                  </div>
+                  <!-- Remaining Quantity To -->
+                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                    <v-text-field
+                      label="Remaining Quantity To"
+                      density="compact"
+                      variant="outlined"
+                      type="number"
+                      v-model="filter.maxRemainingQuantity"
+                      :rules="[value => value == null || value >= 0 || 'Remaining quantity must be non-negative']"
+                    ></v-text-field>
+                  </div>
                 </div>
               </v-expansion-panel-text>
             </v-expansion-panel>
@@ -254,7 +244,7 @@
           <!-- Apply Filters Button -->
           <div class="row mb-3">
             <div class="col-12 text-end">
-              <button @click="getSupplyOrders" class="btn btn-success">
+              <button @click="getStockBatches" class="btn btn-success">
                 <i class="fa-solid fa-filter"></i> Apply Filters
               </button>
             </div>
@@ -262,17 +252,18 @@
         </div>
       </div>
 
-      <!-- Supply Orders List -->
+      <!-- Stock Batches List -->
       <div class="card mb-3">
         <div class="card-header d-flex justify-content-between">
-          <h5 class="my-2 d-flex align-items-center">Supply Orders</h5>
+          <h5 class="my-2 d-flex align-items-center">Stock Batches</h5>
         </div>
         <div class="card-body">
-          <div class="supply-orders-action d-flex justify-content-between mb-3">
+          <div class="stock-batches-action d-flex justify-content-between mb-3">
             <div></div>
-            <router-link :to="{ name: 'CreateSupplyOrder' }">
-              <button class="btn btn-main btn-primary">+ New Supply Order</button>
-            </router-link>
+            <!-- Add New Stock Batch Button -->
+            <!-- <router-link :to="{ name: 'CreateStockBatch' }">
+              <button class="btn btn-main btn-primary">+ New Stock Batch</button>
+            </router-link> -->
           </div>
           <table class="table table-sm mt-3">
             <thead>
@@ -287,75 +278,62 @@
                   >
                 </th>
                 <th>STT</th>
-                <th>Order Code</th>
+                <th>Ingredient Name</th>
                 <th>Supplier</th>
-                <th>Status</th>
-                <th>Total Amount</th>
-                <th>Expected Delivery</th>
-                <th>Payment Status</th>
+                <th>Supply Order Code</th>
+                <th>Initial Quantity</th>
+                <th>Remaining Quantity</th>
+                <th>Unit</th>
+                <th>Received Date</th>
+                <th>Expiration Date</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody v-if="supplyOrders.length">
-              <tr v-for="(order, index) in supplyOrders" :key="order.id">
+            <tbody v-if="stockBatches.length">
+              <tr v-for="(batch, index) in stockBatches" :key="batch.id">
                 <td>
                   <input 
                     class="form-check-input" 
                     type="checkbox"
                     name="id"
-                    :value="order.id"
+                    :value="batch.id"
                     v-model="checkedItems[index]"
                   >
                 </td>
                 <td>{{ (page - 1) * 10 + index + 1 }}</td>
-                <td>{{ order.orderCode }}</td>
-                <td>{{ order.supplierName }}</td>
-                <td>
-                  <v-chip :color="getStatusClass(order.status)">
-                    {{ getStatusLabel(order.status) }}
-                  </v-chip>
-                </td>
-                <td>{{ formatCurrency(order.totalAmount) }}</td>
-                <td>{{ formatDate(order.expectedDeliveryDate) }}</td>
-                <td>
-                  <v-chip :color="getPaymentStatusClass(order.paymentStatus)" v-if="order.paymentStatus">
-                    {{ getPaymentStatusLabel(order.paymentStatus) }}
-                  </v-chip>
-                </td>
+                <td>{{ batch.ingredientName }}</td>
+                <td>{{ batch.supplierName }}</td>
+                <td>{{ batch.supplyOrderCode }}</td>
+                <td>{{ batch.initialQuantity }}</td>
+                <td>{{ batch.remainingQuantity }}</td>
+                <td>{{ getMeasurementUnitLabel(batch.defaultUnit) }}</td>
+                <td>{{ formatDate(batch.receivedDate) }}</td>
+                <td>{{ formatDate(batch.expirationDate) }}</td>
                 <td>
                   <div class="d-flex icon">
-                    <!-- View Supply Order Details -->
+                    <!-- View Stock Batch Details -->
                     <div
                       class="cursor-pointer me-2"
-                      @click="viewSupplyOrderDetail(order.id)"
-                      title="View Supply Order"
+                      @click="viewStockBatchDetail(batch.id)"
+                      title="View Stock Batch"
                     >
                       <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
                     </div>
                     
-                    <!-- Edit Supply Order -->
-                    <router-link 
-                      :to="{ name: 'ModifySupplyOrder', params: { id: `${order.id}` } }"
+                    <!-- Edit Stock Batch -->
+                    <!-- <router-link 
+                      :to="{ name: 'ModifyStockBatch', params: { id: `${batch.id}` } }"
                       class="d-flex align-items-center me-2"
-                      title="Modify Supply Order"
+                      title="Modify Stock Batch"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link>
+                    </router-link> -->
 
-                    <!-- Complete Supply Order -->
+                    <!-- Delete Stock Batch -->
                     <div
-                      class="cursor-pointer me-2"
-                      @click="completeSupplyOrder(order.id)"
-                      title="Complete Supply Order"
-                    >
-                      <i class="fa-regular fa-circle-check fa-lg fa-fw"></i>
-                    </div>
-                    
-                    <!-- Delete Supply Order -->
-                    <div
-                      @click="handleDelete(order.id)"
+                      @click="handleDelete(batch.id)"
                       class="cursor-pointer"
-                      title="Delete Supply Order"
+                      title="Delete Stock Batch"
                     >
                       <i class="fa-regular fa-trash-can fa-lg fa-fw"></i>
                     </div>
@@ -365,7 +343,7 @@
             </tbody>
             <tbody v-else>
               <tr>
-                <td colspan="9">
+                <td colspan="10">
                   <div class="text-center">
                     No result.
                   </div>
@@ -390,7 +368,7 @@
               </v-row>
             </v-container>
           </div>
-          <!-- View Supply Order Dialog -->
+          <!-- View Stock Batch Dialog -->
           <div class="me-2">
             <v-dialog
               v-model="viewDialog"
@@ -399,125 +377,89 @@
             >
               <v-card
                 prepend-icon="mdi-information"
-                title="Supply Order Details"
+                title="Stock Batch Details"
               >
                 <v-card-text>
                   <v-row dense>
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Order Code"
+                        label="Ingredient Name"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.orderCode"
+                        v-model="stockBatchDetail.ingredientName"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-select
-                        :items="statusOptions"
-                        label="Status"
+                        :items="measurementUnitOptions"
+                        label="Default Unit"
                         density="compact"
                         variant="outlined"
                         item-title="label"
                         item-value="value"
-                        v-model="supplyOrderDetail.status" 
-                        :readonly="true"
-                      />
-                    </v-col>
-
-                    <v-col cols="12" md="6" sm="12">
-                      <v-select
-                        :items="paymentStatusOptions"
-                        label="Payment Status"
-                        density="compact"
-                        variant="outlined"
-                        item-title="label"
-                        item-value="value"
-                        v-model="supplyOrderDetail.paymentStatus" 
-                        :readonly="true"
-                      />
-                    </v-col>
-
-                    <v-col cols="12" md="6" sm="12">
-                      <v-select
-                        :items="paymentMethodOptions"
-                        label="Payment Method"
-                        density="compact"
-                        variant="outlined"
-                        item-title="label"
-                        item-value="value"
-                        v-model="supplyOrderDetail.paymentMethod" 
+                        v-model="stockBatchDetail.defaultUnit"
                         :readonly="true"
                       />
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Expected Delivery Date"
+                        label="Initial Quantity"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.expectedDeliveryDate"
+                        v-model="stockBatchDetail.initialQuantity"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Actual Delivery Date"
+                        label="Remaining Quantity"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.actualDeliveryDate"
+                        v-model="stockBatchDetail.remainingQuantity"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Total Amount"
+                        label="Supply Order Code"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.totalAmount"
+                        v-model="stockBatchDetail.supplyOrderCode"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Created By"
+                        label="Supply Order Description"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.createdBy"
+                        v-model="stockBatchDetail.supplyOrderDescription"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Created At"
+                        label="Received Date"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.createdAt"
+                        v-model="stockBatchDetail.receivedDate"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
-                        label="Updated By"
+                        label="Expiration Date"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.updatedBy"
-                        :readonly="true"
-                      ></v-text-field>
-                    </v-col>
-
-                    <v-col cols="12" md="6" sm="12">
-                      <v-text-field
-                        label="Updated At"
-                        density="compact"
-                        variant="outlined"
-                        v-model="supplyOrderDetail.updatedAt"
+                        v-model="stockBatchDetail.expirationDate"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
@@ -527,34 +469,50 @@
                         label="Supplier Name"
                         density="compact"
                         variant="outlined"
-                        v-model="supplyOrderDetail.supplierName"
+                        v-model="stockBatchDetail.supplierName"
                         :readonly="true"
                       ></v-text-field>
                     </v-col>
 
-                    <v-col cols="12">
-                      <v-textarea
-                        label="Description"
-                        row-height="20"
-                        rows="2"
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Number of Items"
                         density="compact"
                         variant="outlined"
-                        auto-grow
-                        v-model="supplyOrderDetail.description"
+                        v-model="stockBatchDetail.numberOfItems"
                         :readonly="true"
-                      ></v-textarea>
+                      ></v-text-field>
                     </v-col>
-                  </v-row>
-                  <!-- Supply Order Items Table -->
-                  <v-divider class="my-4"></v-divider>
-                  <v-row>
-                    <v-col cols="12">
-                      <h5>Supply Order Items</h5>
-                      <v-data-table-virtual
-                        :headers="itemTableHeaders"
-                        :items="supplyOrderDetail.supplyOrderItems"
-                      >
-                      </v-data-table-virtual>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Price Per Item"
+                        density="compact"
+                        variant="outlined"
+                        v-model="stockBatchDetail.pricePerItem"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Unit Value"
+                        density="compact"
+                        variant="outlined"
+                        v-model="stockBatchDetail.unitValue"
+                        :readonly="true"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                      <v-text-field
+                        label="Subtotal"
+                        density="compact"
+                        variant="outlined"
+                        prefix="$"
+                        v-model="stockBatchDetail.subtotal"
+                        :readonly="true"
+                      ></v-text-field>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -576,7 +534,7 @@
       </div>
     </div>
     <!-- Skeleton Loaders while fetching data -->
-    <div class="supply-orders-wrapper" v-else>
+    <div class="stock-batches-wrapper" v-else>
       <v-row>
         <v-col cols="6">
           <v-skeleton-loader
@@ -666,7 +624,7 @@
           <table class="table table-sm mt-3">
             <thead>
               <tr>
-                <th colspan="9">
+                <th colspan="10">
                   <v-skeleton-loader
                     class="my-0"
                     type="table-row"
@@ -676,10 +634,10 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="9">
+                <td colspan="10">
                   <v-skeleton-loader
                     class="my-0"
-                    type="table-row-divider@9"
+                    type="table-row-divider@10"
                   ></v-skeleton-loader>
                 </td>
               </tr>
@@ -705,14 +663,14 @@
     </div>
   </div>
   <!-- Unauthorized Component -->
-  <div class="supply-orders fluid-container mx-5" v-else>
+  <div class="stock-batches fluid-container mx-5" v-else>
     <Unauthorized />
   </div>
 </template>
 
 <script>
 import Search from '@/components/admin/Search/Search.vue'
-import supplyOrderService from '@/services/admin/supplyOrder.service.js'
+import stockBatchService from '@/services/admin/stockBatch.service.js'
 import supplierService from '@/services/admin/supplier.service.js'
 import ingredientService from '@/services/admin/ingredient.service.js'
 import confirmDialogHelper from '@/helpers/admin/dialogs/confirm.helper.js'
@@ -720,73 +678,76 @@ import successDialogHelper from '@/helpers/admin/dialogs/success.helper.js'
 import Unauthorized from '@/components/admin/Unauthorized/Unauthorized.vue'
 import { PermissionHelper } from '@/helpers/admin/auth/permission.helper'
 import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
-import { SupplyOrderSortField, SupplyOrderStatus } from '@/enums/supplyOrder.enum.js'
-import { PaymentMethod, PaymentStatus } from '@/enums/payment.enum.js'
+import { StockBatchSortField } from '@/enums/stockBatch.enum.js'
+import { MeasurementUnit } from '@/enums/measurementUnit.enum.js'
 import { SortDirection } from '@/enums/sortDir.enum.js'
 import Swal from 'sweetalert2';
 
 export default {
-  name: "SupplyOrders",
+  name: "StockBatches",
   components: {
     Search,
     Unauthorized,
   },
   data() {
     return {
-      supplyOrders: [],
+      stockBatches: [],
       filter: {
         keyword: '',
-        minTotalAmount: null,
-        maxTotalAmount: null,
-        status: null,
-        paymentMethod: null,
-        paymentStatus: null,
-        expectedDeliveryDateFrom: null,
-        expectedDeliveryDateTo: null,
-        actualDeliveryDateFrom: null,
-        actualDeliveryDateTo: null,
+        minInitialQuantity: null,
+        maxInitialQuantity: null,
+        minRemainingQuantity: null,
+        maxRemainingQuantity: null,
+        receivedDateFrom: null,
+        receivedDateTo: null,
+        expirationDateFrom: null,
+        expirationDateTo: null,
         supplierIds: [],
         ingredientIds: [], 
+        defaultUnit: null
       },
-      sortCriteria: [ { sortBy: '', sortDir: '' } ], // Use sortCriteria
+      sortCriteria: [ { sortBy: '', sortDir: '' } ], 
       checkall: false,
       checkedItems: [],
       page: 1,
       totalPages: 0,
       isFetching: true,
       alert: false,
-      sortFieldOptions: SupplyOrderSortField.toArray(),
+      sortFieldOptions: StockBatchSortField.toArray(),
       sortDirectionOptions: SortDirection.toArray(),
-      statusOptions: SupplyOrderStatus.toArray(),
-      paymentMethodOptions: PaymentMethod.toArray(),
-      paymentStatusOptions: PaymentStatus.toArray(),
+      measurementUnitOptions: MeasurementUnit.toArray(),
       viewDialog: false,
-      supplyOrderDetail: {
-        orderCode: '',
-        status: '',
-        paymentStatus: '',
-        paymentMethod: '',
-        expectedDeliveryDate: '',
-        actualDeliveryDate: '',
-        totalAmount: '',
-        createdBy: '',
-        createdAt: '',
-        updatedBy: '',
-        updatedAt: '',
+      stockBatchDetail: {
+        id: null,
+        ingredientId: null,
+        ingredientName: '',
+        numberOfItems: null,
+        pricePerItem: null,
+        unitValue: null,
+        defaultUnit: '',
+        subtotal: null,
+        initialQuantity: null,
+        remainingQuantity: null,
+        supplyOrderId: null,
+        supplyOrderCode: '',
+        supplyOrderDescription: '',
+        receivedDate: '',
+        expirationDate: '',
+        supplierId: null,
         supplierName: '',
-        description: '',
-        supplyOrderItems: []
       },
       supplierOptions: [],
       ingredientOptions: [],
       itemTableHeaders: [
-        { title: 'Ingredient Name', key: 'ingredientName' },
-        { title: 'Price ($)', key: 'price' },
-        { title: 'Quantity', key: 'quantity' },
+        { title: 'Number of Items', key: 'numberOfItems' },
+        { title: 'Price Per Item ($)', key: 'pricePerItem' },
         { title: 'Unit Value', key: 'unitValue' },
-        { title: 'Unit', key: 'defaultUnit' },
-        { title: 'Discount (%)', key: 'discount' },
-        { title: 'Subtotal', key: 'subtotal' },
+        { title: 'Default Unit', key: 'defaultUnit' },
+        { title: 'Subtotal ($)', key: 'subtotal' },
+        { title: 'Initial Quantity', key: 'initialQuantity' },
+        { title: 'Remaining Quantity', key: 'remainingQuantity' },
+        { title: 'Received Date', key: 'receivedDate' },
+        { title: 'Expiration Date', key: 'expirationDate' },
       ],
     }
   },
@@ -801,9 +762,9 @@ export default {
     },
 
     /**
-     * Fetches the list of supply orders with applied filters and sorting.
+     * Fetches the list of stock batches with applied filters and sorting.
      */
-    async getSupplyOrders() {
+    async getStockBatches() {
       console.log(this.filter)
       const processedFilter = FilterHelper.processFilter(this.filter);
       // Convert sortCriteria into sortBy and sortDir arrays
@@ -823,11 +784,11 @@ export default {
         if (sortDir.length !== 0) {
           params.sortDir = sortDir.join(',')
         }
-        const response = await supplyOrderService.getAll({
+        const response = await stockBatchService.getAll({
           params: params
         })
         console.log(response)
-        this.supplyOrders = response.data.content
+        this.stockBatches = response.data.content
         this.totalPages = response.data.page.totalPages
         this.isFetching = false
 
@@ -899,41 +860,42 @@ export default {
     handleClear() {
       this.filter = {
         keyword: '',
-        minTotalAmount: null,
-        maxTotalAmount: null,
+        minInitialQuantity: null,
+        maxInitialQuantity: null,
+        minRemainingQuantity: null,
+        maxRemainingQuantity: null,
         status: null,
         paymentMethod: null,
         paymentStatus: null,
-        expectedDeliveryDateFrom: null,
-        expectedDeliveryDateTo: null,
-        actualDeliveryDateFrom: null,
-        actualDeliveryDateTo: null,
+        receivedDateFrom: null,
+        receivedDateTo: null,
+        expirationDateFrom: null,
+        expirationDateTo: null,
         supplierIds: [],
-        supplyOrderItems: [],
         ingredientIds: [], 
       }
       this.sortCriteria = [ { sortBy: '', sortDir: '' } ] // Reset sortCriteria
-      this.getSupplyOrders()
+      this.getStockBatches()
     },
 
     /**
      * Handles the "Check All" functionality.
      */
     handleCheckAll() {  
-      this.checkedItems = this.supplyOrders.map(() => this.checkall)
+      this.checkedItems = this.stockBatches.map(() => this.checkall)
     },
 
     /**
-     * Deletes a supply order after confirmation.
-     * @param {Number} id - The ID of the supply order to delete.
+     * Deletes a stock batch after confirmation.
+     * @param {Number} id - The ID of the stock batch to delete.
      */
     async handleDelete(id) {
       try{
-        if (this.checkPermission('SUPPLY_ORDER_DELETE')) {
+        if (this.checkPermission('STOCK_BATCH_DELETE')) {
           confirmDialogHelper().then(async (result) => {
             if (result.isConfirmed) {
-              await supplyOrderService.deleteOne(id)
-              this.getSupplyOrders()
+              await stockBatchService.deleteOne(id)
+              this.getStockBatches()
               successDialogHelper()
             }
           });
@@ -971,6 +933,30 @@ export default {
       else {
         this.sortCriteria = [ { sortBy: '', sortDir: '' } ];
       }
+
+      // restore receivedDateFrom
+      const receivedDateFromParams = searchParams.get('receivedDateFrom')
+      if (receivedDateFromParams) {
+        this.filter.receivedDateFrom = new Date(receivedDateFromParams)
+      } 
+
+      // restore receivedDateTo
+      const receivedDateToParams = searchParams.get('receivedDateTo')
+      if (receivedDateToParams) {
+        this.filter.receivedDateTo = new Date(receivedDateToParams)
+      }
+
+      // restore expirationDateFrom
+      const expirationDateFromParams = searchParams.get('expirationDateFrom')
+      if (expirationDateFromParams) {
+        this.filter.expirationDateFrom = new Date(expirationDateFromParams)
+      } 
+
+      // restore expirationDateTo
+      const expirationDateToParams = searchParams.get('expirationDateTo')
+      if (expirationDateToParams) {
+        this.filter.expirationDateTo = new Date(expirationDateToParams)
+      } 
     },
 
     /**
@@ -999,33 +985,41 @@ export default {
     },
 
     /**
-     * Fetches and displays supply order details in a dialog.
-     * @param {Number} id - The ID of the supply order to view.
+     * Fetches and displays stock batch details in a dialog.
+     * @param {Number} id - The ID of the stock batch to view.
      */
-    async viewSupplyOrderDetail(id) {
+    async viewStockBatchDetail(id) {
       try {
-        const res = await supplyOrderService.getOne(id);
+        const res = await stockBatchService.getOne(id);
         console.log(res)
-        this.supplyOrderDetail = { 
-          orderCode: res.data.orderCode,
-          status: res.data.status,
-          paymentStatus: res.data.paymentStatus,
-          paymentMethod: res.data.paymentMethod,
-          expectedDeliveryDate: this.formatDate(res.data.expectedDeliveryDate),
-          actualDeliveryDate: this.formatDate(res.data.actualDeliveryDate),
-          totalAmount: this.formatCurrency(res.data.totalAmount),
-          createdBy: res.data.createdBy,
-          createdAt: this.formatDateTime(res.data.createdAt),
-          updatedBy: res.data.updatedBy,
-          updatedAt: this.formatDateTime(res.data.updatedAt),
-          supplierName: res.data.supplier.name,
-          description: res.data.description,
-          supplyOrderItems: res.data.supplyOrderItems
+        this.stockBatchDetail = { 
+          id: res.data.id,
+          ingredientId: res.data.ingredientId,
+          ingredientName: res.data.ingredientName,
+          numberOfItems: res.data.numberOfItems,
+          pricePerItem: res.data.pricePerItem,
+          unitValue: res.data.unitValue,
+          defaultUnit: res.data.defaultUnit,
+          subtotal: res.data.subtotal,
+          initialQuantity: res.data.initialQuantity,
+          remainingQuantity: res.data.remainingQuantity,
+          supplyOrderId: res.data.supplyOrderId,
+          supplyOrderCode: res.data.supplyOrderCode,
+          supplyOrderDescription: res.data.supplyOrderDescription,
+          receivedDate: this.formatDateTime(res.data.receivedDate),
+          expirationDate: this.formatDateTime(res.data.expirationDate),
+          supplierId: res.data.supplierId,
+          supplierName: res.data.supplierName,
         };
-        console.log(this.supplyOrderDetail)
         this.viewDialog = true;
       } catch (error) {
-        console.error("Error fetching supply order details:", error);
+        console.error("Error fetching stock batch details:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to fetch stock batch details.',
+          confirmButtonText: 'OK',
+        });
       }
     },
 
@@ -1059,64 +1053,13 @@ export default {
       const date = new Date(dateTimeStr);
       return date.toLocaleString();
     },
-    getStatusClass(status) {
-      const config = SupplyOrderStatus.getConfig(status);
-      return `${config.color}`;
+    getMeasurementUnitLabel(status) {
+      return MeasurementUnit.getLabel(status);
     },
-    getStatusLabel(status) {
-      return SupplyOrderStatus.getLabel(status);
-    },
-    getPaymentMethodClass(status) {
-      const config = PaymentMethod.getConfig(status);
-      return `${config.color}`;
-    },
-    getPaymentMethodLabel(status) {
-      return PaymentMethod.getLabel(status);
-    },
-    getPaymentStatusClass(status) {
-      const config = PaymentStatus.getConfig(status);
-      return `${config.color}`;
-    },
-    getPaymentStatusLabel(status) {
-      return PaymentStatus.getLabel(status);
-    },
-    async completeSupplyOrder(id) {
-      confirmDialogHelper(
-        "Are you sure?",
-        "Complete the supply order? This action cannot be undone!",
-        "Yes, complete it!"
-      ).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await supplyOrderService.completeSupplyOrder(id);
-            this.getSupplyOrders()
-            successDialogHelper(
-              "Completed!",
-              "Supply order was completed successfully!"
-            )
-          } catch (error) {
-            console.error("Error completing supply order:", error);
-            Swal.close();
-
-            let errorMessage = 'Failed to complete the supply order.';
-            if (error.response && error.response.data && error.response.data.message) {
-              errorMessage = error.response.data.message;
-            }
-
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: errorMessage,
-              confirmButtonText: 'OK',
-            });
-          }
-        }
-      });
-    }
   },
   mounted() {
     this.initFilterFromUrl()
-    this.getSupplyOrders()
+    this.getStockBatches()
     this.fetchSuppliers() 
     this.fetchIngredients() 
   },
@@ -1133,7 +1076,7 @@ export default {
       deep: true
     },
     page() {
-      this.getSupplyOrders()
+      this.getStockBatches()
     }
   },
   computed: {
@@ -1147,7 +1090,7 @@ export default {
 }
 
 @media (max-width: 767.98px) {
-  .d-flex:not(.supply-orders-title, .card-header) {
+  .d-flex:not(.stock-batches-title, .card-header) {
     flex-direction: column !important;
     align-items: stretch !important;
   }
@@ -1164,7 +1107,7 @@ export default {
     align-self: flex-end;
   }
 
-  .supply-orders-action {
+  .stock-batches-action {
     flex-direction: column;
     gap: 10px;
   }
