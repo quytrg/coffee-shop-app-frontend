@@ -145,6 +145,11 @@
   background-color: #fff1e3;
 }
 
+.icon .fa-circle-check:hover {
+  color: #55b6f3;
+  background-color: #e5fafc;
+}
+
 .icon .fa-trash-can:hover {
   color: #ea5455;
   background-color: #fce5e6;

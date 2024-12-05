@@ -345,6 +345,15 @@
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
                     </router-link>
+
+                    <!-- Complete Supply Order -->
+                    <div
+                      class="cursor-pointer me-2"
+                      @click="completeSupplyOrder(order.id)"
+                      title="Complete Supply Order"
+                    >
+                      <i class="fa-regular fa-circle-check fa-lg fa-fw"></i>
+                    </div>
                     
                     <!-- Delete Supply Order -->
                     <div
@@ -718,6 +727,7 @@ import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
 import { SupplyOrderSortField, SupplyOrderStatus } from '@/enums/supplyOrder.enum.js'
 import { PaymentMethod, PaymentStatus } from '@/enums/payment.enum.js'
 import { SortDirection } from '@/enums/sortDir.enum.js'
+import Swal from 'sweetalert2';
 
 export default {
   name: "SupplyOrders",
@@ -1074,6 +1084,39 @@ export default {
     getPaymentStatusLabel(status) {
       return PaymentStatus.getLabel(status);
     },
+    async completeSupplyOrder(id) {
+      confirmDialogHelper(
+        "Are you sure?",
+        "Complete the supply order? This action cannot be undone!",
+        "Yes, complete it!"
+      ).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await supplyOrderService.completeSupplyOrder(id);
+            this.getSupplyOrders()
+            successDialogHelper(
+              "Completed!",
+              "Supply order was completed successfully!"
+            )
+          } catch (error) {
+            console.error("Error completing supply order:", error);
+            Swal.close();
+
+            let errorMessage = 'Failed to complete the supply order.';
+            if (error.response && error.response.data && error.response.data.message) {
+              errorMessage = error.response.data.message;
+            }
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: errorMessage,
+              confirmButtonText: 'OK',
+            });
+          }
+        }
+      });
+    }
   },
   mounted() {
     this.initFilterFromUrl()

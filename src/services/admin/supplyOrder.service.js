@@ -25,6 +25,10 @@ class SupplyOrderService {
   async deleteOne(id) {
     return (await this.api.delete(`/${id}`)).data;
   }
+
+  async completeSupplyOrder(id) {
+    return (await this.api.patch(`/${id}/complete`)).data;
+  }
 }
 
 export default new SupplyOrderService();
