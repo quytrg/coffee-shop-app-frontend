@@ -52,7 +52,7 @@ export const PaymentStatus = Object.freeze({
   // Enum values
   UNPAID: 'UNPAID',
   PARTIALLY_PAID: 'PARTIALLY_PAID',
-  PAID: 'UPDATPAIDED_AT',
+  PAID: 'PAID',
   OVERDUE: 'OVERDUE',
   REFUNDED: 'REFUNDED',
 

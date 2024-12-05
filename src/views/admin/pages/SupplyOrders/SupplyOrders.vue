@@ -338,13 +338,13 @@
                     </div>
                     
                     <!-- Edit Supply Order -->
-                    <!-- <router-link 
+                    <router-link 
                       :to="{ name: 'ModifySupplyOrder', params: { id: `${order.id}` } }"
                       class="d-flex align-items-center me-2"
                       title="Modify Supply Order"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link> -->
+                    </router-link>
                     
                     <!-- Delete Supply Order -->
                     <div

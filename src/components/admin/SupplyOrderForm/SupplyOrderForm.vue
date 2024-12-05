@@ -136,6 +136,7 @@
                       clearable
                       hide-details
                       v-model="item.ingredientId"
+                      @update:modelValue="value => handleChangeIngredient(index, value)"
                       :rules="[v => !!v || 'Ingredient is required']"
                     />
                     <ErrorMessage :name="`supplyOrderItems.${index}.ingredientId`" class="error-feedback text-warning" />
@@ -214,6 +215,7 @@
                       hide-details
                       v-model="item.unit"
                       :rules="[v => !!v || 'Unit is required']"
+                      :readonly="true"
                     />
                     <ErrorMessage :name="`supplyOrderItems.${index}.unit`" class="error-feedback text-warning" />
                   </div>
@@ -274,6 +276,7 @@ import { MeasurementUnit } from '@/enums/measurementUnit.enum.js';
 import { PaymentMethod, PaymentStatus } from '@/enums/payment.enum.js'
 import supplierService from '@/services/admin/supplier.service.js'
 import ingredientService from '@/services/admin/ingredient.service.js'
+import { readonly } from "vue";
 
 export default {
   name: "SupplyOrderForm",
@@ -448,6 +451,10 @@ export default {
       if (this.localSupplyOrder.supplyOrderItems.length > 1) {
         this.localSupplyOrder.supplyOrderItems.splice(index, 1);
       }
+    },
+    handleChangeIngredient(index, value) {
+      const result = this.ingredientOptions.find(item => item.id === value);
+      this.localSupplyOrder.supplyOrderItems[index].unit = result.defaultUnit
     },
   },
   mounted() {

@@ -323,7 +323,7 @@
                             v-model="ingredient.unit"
                             :rules="[value => !!value || 'Unit is required']"
                             required
-                            :readonly="isViewingVariant"
+                            :readonly="true"
                           ></v-select>
                         </v-col>
 
