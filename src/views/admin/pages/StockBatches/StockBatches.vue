@@ -321,13 +321,13 @@
                     </div>
                     
                     <!-- Edit Stock Batch -->
-                    <!-- <router-link 
+                    <router-link 
                       :to="{ name: 'ModifyStockBatch', params: { id: `${batch.id}` } }"
                       class="d-flex align-items-center me-2"
                       title="Modify Stock Batch"
                     >
                       <i class="fa-regular fa-pen-to-square fa-lg fa-fw"></i>
-                    </router-link> -->
+                    </router-link>
 
                     <!-- Delete Stock Batch -->
                     <div
