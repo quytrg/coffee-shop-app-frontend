@@ -21,6 +21,10 @@ class StockBatchService {
   async deleteOne(id) {
     return (await this.api.delete(`/${id}`)).data;
   }
+
+  async getStockBatchReports(options={}) {
+    return (await this.api.get('/report', options)).data;
+  }
 }
 
 export default new StockBatchService();

@@ -1,5 +1,3 @@
-<!-- src/views/admin/StockBatchReports/StockBatchReport.vue -->
-
 <template>
   <div class="stock-batch-report fluid-container mx-5" v-if="checkPermission('STOCK_BATCH_REPORT_VIEW')">
     <div class="stock-batch-report-wrapper position-relative" v-if="!isFetching">
@@ -53,6 +51,7 @@
                 variant="outlined"
                 item-title="label"
                 item-value="value"
+                hide-details
                 clearable
                 v-model="filter.defaultUnit"
               />
@@ -60,14 +59,11 @@
           </div>
           <!-- Advanced Filters -->
           <v-expansion-panels class="mb-5">
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                <span>Advanced Filters</span>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
+            <v-expansion-panel title="Advanced Filters">
+              <v-expansion-panel-text>
                 <div class="row">
                   <!-- Initial Quantity Range -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                  <div class="col-lg-6 col-md-6 mb-md-2 mb-lg-0">
                     <v-text-field
                       label="Min Initial Quantity"
                       density="compact"
@@ -77,7 +73,7 @@
                       :rules="[value => value == null || value >= 0 || 'Initial quantity must be non-negative']"
                     ></v-text-field>
                   </div>
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                  <div class="col-lg-6 col-md-6 mb-md-2 mb-lg-0">
                     <v-text-field
                       label="Max Initial Quantity"
                       density="compact"
@@ -88,7 +84,7 @@
                     ></v-text-field>
                   </div>
                   <!-- Remaining Quantity Range -->
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                  <div class="col-lg-6 col-md-6 mb-md-2 mb-lg-0">
                     <v-text-field
                       label="Min Remaining Quantity"
                       density="compact"
@@ -98,7 +94,7 @@
                       :rules="[value => value == null || value >= 0 || 'Remaining quantity must be non-negative']"
                     ></v-text-field>
                   </div>
-                  <div class="col-lg-4 col-md-6 mb-md-2 mb-lg-0">
+                  <div class="col-lg-6 col-md-6 mb-md-2 mb-lg-0">
                     <v-text-field
                       label="Max Remaining Quantity"
                       density="compact"
@@ -114,6 +110,7 @@
                       clearable 
                       label="Expiration Date From" 
                       variant="solo" 
+                      prepend-icon=""
                       prepend-inner-icon="$calendar"
                       density="compact"
                       v-model="filter.expirationDateFrom"
@@ -125,6 +122,7 @@
                       clearable 
                       label="Expiration Date To" 
                       variant="solo" 
+                      prepend-icon=""
                       prepend-inner-icon="$calendar"
                       density="compact"
                       v-model="filter.expirationDateTo"
@@ -137,6 +135,7 @@
                       clearable 
                       label="Received Date From" 
                       variant="solo" 
+                      prepend-icon=""
                       prepend-inner-icon="$calendar"
                       density="compact"
                       v-model="filter.receivedDateFrom"
@@ -148,6 +147,7 @@
                       clearable 
                       label="Received Date To" 
                       variant="solo" 
+                      prepend-icon=""
                       prepend-inner-icon="$calendar"
                       density="compact"
                       v-model="filter.receivedDateTo"
@@ -273,7 +273,7 @@
                     ></v-text-field>
                   </div>
                 </div>
-              </v-expansion-panel-content>
+              </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
 
@@ -368,7 +368,6 @@
                 <th>Unit Value</th>
                 <th>Subtotal ($)</th>
                 <th>Order Code</th>
-                <th>Order Status</th>
                 <th>Supplier Name</th>
                 <th>Action</th>
               </tr>
@@ -391,18 +390,13 @@
                 <td>{{ report.unitValue }} {{ getMeasurementUnitLabel(report.defaultUnit) }}</td>
                 <td>{{ formatCurrency(report.subtotal) }}</td>
                 <td>{{ report.supplyOrderCode }}</td>
-                <td>
-                  <v-chip :color="getStatusClass(report.orderStatus)">
-                    {{ getStatusLabel(report.orderStatus) }}
-                  </v-chip>
-                </td>
                 <td>{{ report.supplierName }}</td>
                 <td>
                   <div class="d-flex icon">
                     <!-- View Report Details -->
                     <div
                       class="cursor-pointer me-2"
-                      @click="viewReportDetail(report.id)"
+                      @click="viewReportDetail(index)"
                       title="View Report"
                     >
                       <i class="fa-regular fa-clipboard fa-lg fa-fw"></i>
@@ -512,7 +506,7 @@
                       ></v-text-field>
                     </v-col>
 
-                    <v-col cols="12" md="6" sm="12">
+                    <!-- <v-col cols="12" md="6" sm="12">
                       <v-select
                         :items="statusOptions"
                         label="Order Status"
@@ -523,7 +517,7 @@
                         v-model="reportDetail.orderStatus"
                         :readonly="true"
                       />
-                    </v-col>
+                    </v-col> -->
 
                     <v-col cols="12" md="6" sm="12">
                       <v-text-field
@@ -592,152 +586,157 @@
           </div>
         </div>
       </div>
-      <!-- Skeleton Loaders while fetching data -->
-      <div class="stock-batch-report-wrapper" v-else>
-        <v-row>
-          <v-col cols="6">
-            <v-skeleton-loader
-              color="grey-lighten-5"
-              class="my-2"
-              max-width="400"
-              type="heading"
-            ></v-skeleton-loader>
-          </v-col>
-        </v-row>
+      
+    </div>
+    <!-- Skeleton Loaders while fetching data -->
+    <div class="stock-batch-report-wrapper" v-else>
+      <v-row>
+        <v-col cols="6">
+          <v-skeleton-loader
+            color="grey-lighten-5"
+            class="my-2"
+            max-width="400"
+            type="heading"
+          ></v-skeleton-loader>
+        </v-col>
+      </v-row>
 
-        <div class="card mb-3">
-          <div class="card-header d-flex justify-content-between">
-            <v-row>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="my-0"
-                  max-width="120"
-                  type="subtitle"
-                ></v-skeleton-loader>
-              </v-col>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="ms-auto my-0"
-                  max-width="120"
-                  type="subtitle"
-                ></v-skeleton-loader>
-              </v-col>
-            </v-row>
-          </div>
-          <div class="card-body">
-            <v-row>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="my-0"
-                  max-width="300"
-                  type="heading"
-                ></v-skeleton-loader>
-              </v-col>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="ms-auto my-0"
-                  max-width="400"
-                  type="heading"
-                ></v-skeleton-loader>
-              </v-col>
-            </v-row>
-          </div>
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+          <v-row>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="my-0"
+                max-width="120"
+                type="subtitle"
+              ></v-skeleton-loader>
+            </v-col>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="ms-auto my-0"
+                max-width="120"
+                type="subtitle"
+              ></v-skeleton-loader>
+            </v-col>
+          </v-row>
         </div>
+        <div class="card-body">
+          <v-row>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="my-0"
+                max-width="300"
+                type="heading"
+              ></v-skeleton-loader>
+            </v-col>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="ms-auto my-0"
+                max-width="400"
+                type="heading"
+              ></v-skeleton-loader>
+            </v-col>
+          </v-row>
+        </div>
+      </div>
 
-        <div class="card mb-3">
-          <div class="card-header d-flex justify-content-between">
-            <v-row>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="my-0"
-                  max-width="120"
-                  type="subtitle"
-                ></v-skeleton-loader>
-              </v-col>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="ms-auto my-0"
-                  max-width="120"
-                  type="subtitle"
-                ></v-skeleton-loader>
-              </v-col>
-            </v-row>
-          </div>
-          <div class="card-body">
-            <v-row>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="my-0"
-                  max-width="300"
-                  type="heading"
-                ></v-skeleton-loader>
-              </v-col>
-              <v-col cols="6" class="py-1">
-                <v-skeleton-loader
-                  class="ms-auto my-0"
-                  max-width="400"
-                  type="heading"
-                ></v-skeleton-loader>
-              </v-col>
-            </v-row>
-            <table class="table table-sm mt-3">
-              <thead>
-                <tr>
-                  <th colspan="11">
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between">
+          <v-row>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="my-0"
+                max-width="120"
+                type="subtitle"
+              ></v-skeleton-loader>
+            </v-col>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="ms-auto my-0"
+                max-width="120"
+                type="subtitle"
+              ></v-skeleton-loader>
+            </v-col>
+          </v-row>
+        </div>
+        <div class="card-body">
+          <v-row>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="my-0"
+                max-width="300"
+                type="heading"
+              ></v-skeleton-loader>
+            </v-col>
+            <v-col cols="6" class="py-1">
+              <v-skeleton-loader
+                class="ms-auto my-0"
+                max-width="400"
+                type="heading"
+              ></v-skeleton-loader>
+            </v-col>
+          </v-row>
+          <table class="table table-sm mt-3">
+            <thead>
+              <tr>
+                <th colspan="11">
+                  <v-skeleton-loader
+                    class="my-0"
+                    type="table-row"
+                  ></v-skeleton-loader>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="11">
+                  <v-skeleton-loader
+                    class="my-0"
+                    type="table-row-divider@11"
+                  ></v-skeleton-loader>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center">
+            <v-container>
+              <v-row justify="center">
+                <v-col cols="8" class="p-0">
+                  <v-container class="max-width p-0">
                     <v-skeleton-loader
-                      class="my-0"
-                      type="table-row"
+                      class="mx-auto"
+                      max-width="300"
+                      type="heading"
                     ></v-skeleton-loader>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colspan="11">
-                    <v-skeleton-loader
-                      class="my-0"
-                      type="table-row-divider@11"
-                    ></v-skeleton-loader>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="text-center">
-              <v-container>
-                <v-row justify="center">
-                  <v-col cols="8" class="p-0">
-                    <v-container class="max-width p-0">
-                      <v-skeleton-loader
-                        class="mx-auto"
-                        max-width="300"
-                        type="heading"
-                      ></v-skeleton-loader>
-                    </v-container>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </div>
+                  </v-container>
+                </v-col>
+              </v-row>
+            </v-container>
           </div>
         </div>
       </div>
     </div>
-    <!-- Unauthorized Component -->
-    <div class="stock-batch-report fluid-container mx-5" v-else>
-      <Unauthorized />
-    </div>
+  </div>
+  <!-- Unauthorized Component -->
+  <div class="stock-batch-report fluid-container mx-5" v-else>
+    <Unauthorized />
   </div>
 </template>
 
 <script>
 import Search from '@/components/admin/Search/Search.vue'
-import stockBatchReportService from '@/services/admin/stockBatchReport.service.js'
-import userService from '@/services/admin/user.service.js'
+import stockBatchService from '@/services/admin/stockBatch.service.js'
+import accountService from '@/services/admin/account.service.js'
+import ingredientService from '@/services/admin/ingredient.service.js'
+import supplierService from '@/services/admin/supplier.service.js'
 import confirmDialogHelper from '@/helpers/admin/dialogs/confirm.helper.js'
 import successDialogHelper from '@/helpers/admin/dialogs/success.helper.js'
+import loadingDialogHelper from '@/helpers/admin/dialogs/loading.helper.js';
 import Unauthorized from '@/components/admin/Unauthorized/Unauthorized.vue'
 import { PermissionHelper } from '@/helpers/admin/auth/permission.helper.js';
 import { FilterHelper } from '@/helpers/admin/filter/filter.helper.js';
-import { StockBatchReportSortField, MeasurementUnit } from '@/enums/stockBatch.enum.js'
+import { MeasurementUnit } from '@/enums/measurementUnit.enum.js'
+import { StockBatchReportSortField } from '@/enums/stockBatch.enum.js'
 import { SortDirection } from '@/enums/sortDir.enum.js'
 import Swal from 'sweetalert2';
 
@@ -855,7 +854,7 @@ export default {
           params.sortDir = sortDir.join(',')
         }
 
-        const response = await stockBatchReportService.getAll({
+        const response = await stockBatchService.getStockBatchReports({
           params: params
         })
         console.log(response)
@@ -882,7 +881,7 @@ export default {
             size: 100,
           }
         }
-        const result = await stockBatchReportService.getIngredients(filter)
+        const result = await ingredientService.getAll(filter)
         console.log(result)
         this.ingredientOptions = result.data.content
       }
@@ -901,7 +900,7 @@ export default {
             size: 100,
           }
         }
-        const result = await stockBatchReportService.getSuppliers(filter)
+        const result = await supplierService.getAll(filter)
         console.log(result)
         this.supplierOptions = result.data.content
       }
@@ -920,7 +919,7 @@ export default {
             size: 100,
           }
         }
-        const result = await userService.getAll(filter)
+        const result = await accountService.getAll(filter)
         console.log(result)
         this.userOptions = result.data.content
       }
@@ -991,28 +990,28 @@ export default {
      * Deletes a stock batch report after confirmation.
      * @param {Number} id - The ID of the report to delete.
      */
-    async handleDelete(id) {
-      try{
-        if (this.checkPermission('STOCK_BATCH_REPORT_DELETE')) {
-          confirmDialogHelper().then(async (result) => {
-            if (result.isConfirmed) {
-              await stockBatchReportService.deleteOne(id)
-              this.getStockBatchReports()
-              successDialogHelper()
-            }
-          });
-        }
-        else {
-          this.alert = true
-          setTimeout(() => {
-            this.alert = false
-          }, 1200)
-        }
-      }
-      catch (err) {
-        console.log(err)
-      }
-    },
+    // async handleDelete(id) {
+    //   try{
+    //     if (this.checkPermission('STOCK_BATCH_REPORT_DELETE')) {
+    //       confirmDialogHelper().then(async (result) => {
+    //         if (result.isConfirmed) {
+    //           await stockBatchReportService.deleteOne(id)
+    //           this.getStockBatchReports()
+    //           successDialogHelper()
+    //         }
+    //       });
+    //     }
+    //     else {
+    //       this.alert = true
+    //       setTimeout(() => {
+    //         this.alert = false
+    //       }, 1200)
+    //     }
+    //   }
+    //   catch (err) {
+    //     console.log(err)
+    //   }
+    // },
 
     /**
      * Initializes filters from URL parameters when the page loads.
@@ -1035,6 +1034,30 @@ export default {
       else {
         this.sortCriteria = [ { sortBy: '', sortDir: '' } ];
       }
+
+      // restore receivedDateFrom
+      const receivedDateFromParams = searchParams.get('receivedDateFrom')
+      if (receivedDateFromParams) {
+        this.filter.receivedDateFrom = new Date(receivedDateFromParams)
+      } 
+
+      // restore receivedDateTo
+      const receivedDateToParams = searchParams.get('receivedDateTo')
+      if (receivedDateToParams) {
+        this.filter.receivedDateTo = new Date(receivedDateToParams)
+      }
+
+      // restore expirationDateFrom
+      const expirationDateFromParams = searchParams.get('expirationDateFrom')
+      if (expirationDateFromParams) {
+        this.filter.expirationDateFrom = new Date(expirationDateFromParams)
+      } 
+
+      // restore expirationDateTo
+      const expirationDateToParams = searchParams.get('expirationDateTo')
+      if (expirationDateToParams) {
+        this.filter.expirationDateTo = new Date(expirationDateToParams)
+      } 
     },
 
     /**
@@ -1066,32 +1089,32 @@ export default {
      * Fetches and displays stock batch report details in a dialog.
      * @param {Number} id - The ID of the report to view.
      */
-    async viewReportDetail(id) {
+    async viewReportDetail(index) {
       try {
-        const res = await stockBatchReportService.getOne(id);
-        console.log(res)
+        // const res = await stockBatchService.getOne(id);
+        // console.log(res)
         this.reportDetail = { 
-          id: res.data.id,
-          ingredientId: res.data.ingredientId,
-          ingredientName: res.data.ingredientName,
-          numberOfItems: res.data.numberOfItems,
-          pricePerItem: this.formatCurrency(res.data.pricePerItem),
-          unitValue: `${res.data.unitValue} ${this.getMeasurementUnitLabel(res.data.defaultUnit)}`,
-          defaultUnit: res.data.defaultUnit,
-          subtotal: this.formatCurrency(res.data.subtotal),
-          initialQuantity: res.data.initialQuantity,
-          remainingQuantity: res.data.remainingQuantity,
-          supplyOrderId: res.data.supplyOrderId,
-          supplyOrderCode: res.data.supplyOrderCode,
-          supplyOrderDescription: res.data.supplyOrderDescription,
-          receivedDate: this.formatDateTime(res.data.receivedDate),
-          expirationDate: this.formatDateTime(res.data.expirationDate),
-          supplierId: res.data.supplierId,
-          supplierName: res.data.supplierName,
-          createdBy: res.data.createdBy,
-          createdAt: this.formatDateTime(res.data.createdAt),
-          updatedBy: res.data.updatedBy,
-          updatedAt: this.formatDateTime(res.data.updatedAt),
+          id: this.stockBatchReports[index].id,
+          ingredientId: this.stockBatchReports[index].ingredientId,
+          ingredientName: this.stockBatchReports[index].ingredientName,
+          numberOfItems: this.stockBatchReports[index].numberOfItems,
+          pricePerItem: this.formatCurrency(this.stockBatchReports[index].pricePerItem),
+          unitValue: `${this.stockBatchReports[index].unitValue} ${this.getMeasurementUnitLabel(this.stockBatchReports[index].defaultUnit)}`,
+          defaultUnit: this.stockBatchReports[index].defaultUnit,
+          subtotal: this.formatCurrency(this.stockBatchReports[index].subtotal),
+          initialQuantity: this.stockBatchReports[index].initialQuantity,
+          remainingQuantity: this.stockBatchReports[index].remainingQuantity,
+          supplyOrderId: this.stockBatchReports[index].supplyOrderId,
+          supplyOrderCode: this.stockBatchReports[index].supplyOrderCode,
+          supplyOrderDescription: this.stockBatchReports[index].supplyOrderDescription,
+          receivedDate: this.formatDateTime(this.stockBatchReports[index].receivedDate),
+          expirationDate: this.formatDateTime(this.stockBatchReports[index].expirationDate),
+          supplierId: this.stockBatchReports[index].supplierId,
+          supplierName: this.stockBatchReports[index].supplierName,
+          createdBy: this.stockBatchReports[index].createdBy,
+          createdAt: this.formatDateTime(this.stockBatchReports[index].createdAt),
+          updatedBy: this.stockBatchReports[index].updatedBy,
+          updatedAt: this.formatDateTime(this.stockBatchReports[index].updatedAt),
         };
         this.viewDialog = true;
       } catch (error) {
@@ -1135,24 +1158,24 @@ export default {
       return found ? found.label : unit;
     },
 
-    /**
-     * Gets the label for a given order status.
-     * @param {String} status - The order status value.
-     * @returns {String}
-     */
-    getStatusLabel(status) {
-      return StockBatchReportSortField.getStatusLabel(status);
-    },
+    // /**
+    //  * Gets the label for a given order status.
+    //  * @param {String} status - The order status value.
+    //  * @returns {String}
+    //  */
+    // getStatusLabel(status) {
+    //   return StockBatchReportSortField.getStatusLabel(status);
+    // },
 
-    /**
-     * Gets the class for a given order status.
-     * @param {String} status - The order status value.
-     * @returns {String}
-     */
-    getStatusClass(status) {
-      const config = StockBatchReportSortField.getStatusConfig(status);
-      return `${config.color}`;
-    },
+    // /**
+    //  * Gets the class for a given order status.
+    //  * @param {String} status - The order status value.
+    //  * @returns {String}
+    //  */
+    // getStatusClass(status) {
+    //   const config = StockBatchReportSortField.getStatusConfig(status);
+    //   return `${config.color}`;
+    // },
 
     /**
      * Exports the report data based on current filters.
@@ -1160,7 +1183,8 @@ export default {
     async exportReport() {
       try {
         loadingDialogHelper("Exporting Report...");
-        const params = { ...this.filter };
+        const processedFilter = FilterHelper.processFilter(this.filter);
+        const params = { ...processedFilter };
 
         // Handle sorting
         if (this.sortCriteria.length > 0) {
@@ -1172,7 +1196,7 @@ export default {
 
         // Fetch all data without pagination
         const exportParams = { ...params, page: 0, size: 10000 } // Adjust size as needed
-        const response = await stockBatchReportService.getAll({ params: exportParams })
+        const response = await stockBatchService.getStockBatchReports({ params: exportParams })
         const data = response.data.content
 
         // Convert data to CSV
@@ -1219,9 +1243,9 @@ export default {
         'Number of Items',
         'Price per Item ($)',
         'Unit Value',
+        'Unit',
         'Subtotal ($)',
         'Order Code',
-        'Order Status',
         'Supplier Name',
         'Created By',
         'Created At',
@@ -1233,11 +1257,11 @@ export default {
         ...data.map(row => [
           `"${row.ingredientName || ''}"`,
           row.numberOfItems || '',
-          row.pricePerItem != null ? this.formatCurrency(row.pricePerItem) : '',
-          `"${row.unitValue ? `${row.unitValue} ${this.getMeasurementUnitLabel(row.defaultUnit)}` : ''}"`,
-          row.subtotal != null ? this.formatCurrency(row.subtotal) : '',
+          row.pricePerItem || '',
+          row.unitValue || '',
+          `"${this.getMeasurementUnitLabel(row.defaultUnit) || ''}"`,
+          row.subtotal || '',
           `"${row.supplyOrderCode || ''}"`,
-          `"${this.getStatusLabel(row.orderStatus)}"`,
           `"${row.supplierName || ''}"`,
           `"${row.createdBy || ''}"`,
           `"${this.formatDateTime(row.createdAt)}"`,

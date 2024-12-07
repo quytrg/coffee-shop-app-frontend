@@ -29,6 +29,7 @@ import ModifySupplyOrder from '@/views/admin/pages/ModifySupplyOrder/ModifySuppl
 import StockBatches from '@/views/admin/pages/StockBatches/StockBatches.vue'
 import ModifyStockBatch from '@/views/admin/pages/ModifyStockBatch/ModifyStockBatch.vue'
 import OrderReport from '@/views/admin/pages/OrderReport/OrderReport.vue'
+import StockBatchReport from '@/views/admin/pages/StockBatchReport/StockBatchReport.vue'
 
 const adminRouter = [
   {
@@ -196,6 +197,12 @@ const adminRouter = [
         path: "reports/order",
         name: "OrderReport",
         component: OrderReport,
+        meta: { requireAuth: true }
+      },
+      {
+        path: "reports/stock-batch",
+        name: "StockBatchReport",
+        component: StockBatchReport,
         meta: { requireAuth: true }
       },
     ]
