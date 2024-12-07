@@ -89,4 +89,58 @@ export const OrderSortField = Object.freeze({
   }
 });
 
+export const OrderReportSortField = Object.freeze({
+  // Enum values
+  ID: 'ID',
+  QUANTITY: 'QUANTITY',
+  PRICE: 'PRICE',
+  SUBTOTAL: 'SUBTOTAL',
+  PRODUCT_NAME: 'PRODUCT_NAME',
+  PRODUCT_VARIANT_SIZE: 'PRODUCT_VARIANT_SIZE',
+  DISCOUNT: 'DISCOUNT',
+  ORDER_CODE: 'ORDER_CODE',
+  ORDER_STATUS: 'ORDER_STATUS',
+  CREATED_AT: 'CREATED_AT',
+  UPDATED_AT: 'UPDATED_AT',
+  CREATED_BY: 'CREATED_BY',
+  UPDATED_BY: 'UPDATED_BY',
 
+  // Display labels
+  labels: {
+    ID: 'Id',
+    QUANTITY: 'Quantity',
+    PRICE: 'Price',
+    SUBTOTAL: 'Subtotal',
+    PRODUCT_NAME: 'Product Name',
+    PRODUCT_VARIANT_SIZE: 'Product Size',
+    DISCOUNT: 'Discount',
+    ORDER_CODE: 'Order Code',
+    ORDER_STATUS: 'Order Status',
+    CREATED_AT: 'Date Created',
+    UPDATED_AT: 'Last Modified',
+    CREATED_BY: 'User Created',
+    UPDATED_BY: 'User Updated',
+  },
+
+  // UI configurations
+  configs: {
+  },
+
+  // Helper methods
+  getLabel(status) {
+      return this.labels[status] || status;
+  },
+
+  getConfig(status) {
+      return this.configs[status] || {};
+  },
+
+  toArray() {
+      return Array.from(Object.keys(this)
+          .filter(key => typeof this[key] === 'string')
+          .map(key => ({
+            label: this.labels[key],
+            value: this[key]
+          })));
+  }
+});

@@ -18,9 +18,9 @@ class OrderService {
     return (await this.api.get(`/${id}`)).data;
   }
 
-  // async update(id, data) {
-  //   return (await this.api.patch(`/${id}`, data)).data;
-  // }
+  async getOrderItemReports(options={}) {
+    return (await this.api.get('/order-items/report', options)).data;
+  }
 
   async deleteOne(id) {
     return (await this.api.delete(`/${id}`)).data;

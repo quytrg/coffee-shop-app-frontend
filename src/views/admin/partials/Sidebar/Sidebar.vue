@@ -34,6 +34,7 @@ export default {
       menuItems: [
         { link: { name: 'Dashboard' }, name: 'Dashboard', tooltip: 'Dashboard', icon: 'bx bxs-dashboard' },
         { link: { name: 'Orders' }, name: 'Orders', tooltip: 'Orders', icon: 'bx-cart-alt' },
+        { link: { name: 'OrderReport' }, name: 'Order Report', tooltip: 'Order Report', icon: 'bxs-report' },
         { link: { name: 'ProductsAdmin' }, name: 'Products', tooltip: 'Products', icon: 'bxl-dropbox' },
         { link: { name: 'Categories' }, name: 'Categories', tooltip: 'Categories', icon: 'bx bx-collection' },
         { link: { name: 'StockBatches' }, name: 'Stock Batches', tooltip: 'Stock Batches', icon: 'bx bx-package' },
