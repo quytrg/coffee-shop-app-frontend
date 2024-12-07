@@ -6,33 +6,25 @@ class OrderService {
     this.api = createApiClient(baseUrl);
   }
   
-  async get(options={}) {
+  async getAll(options={}) {
     return (await this.api.get('/', options)).data;
   }
 
-  // async create(formData) {
-  //   return (await this.api.post('/', formData, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     }
-  //   })).data
+  async create(data) {
+    return (await this.api.post('/', data)).data
+  }
+
+  async getOne(id) {
+    return (await this.api.get(`/${id}`)).data;
+  }
+
+  // async update(id, data) {
+  //   return (await this.api.patch(`/${id}`, data)).data;
   // }
 
-  // async getOne(id) {
-  //   return (await this.api.get(`/${id}`)).data;
-  // }
-
-  // async update(id, formData) {
-  //   return (await this.api.patch(`/${id}`, formData, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     }
-  //   })).data;
-  // }
-
-  // async deleteOne(id) {
-  //   return (await this.api.delete(`/${id}`)).data;
-  // }
+  async deleteOne(id) {
+    return (await this.api.delete(`/${id}`)).data;
+  }
 }
 
 export default new OrderService();

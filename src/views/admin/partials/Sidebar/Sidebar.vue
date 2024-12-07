@@ -33,6 +33,7 @@ export default {
     return {
       menuItems: [
         { link: { name: 'Dashboard' }, name: 'Dashboard', tooltip: 'Dashboard', icon: 'bx bxs-dashboard' },
+        { link: { name: 'Orders' }, name: 'Orders', tooltip: 'Orders', icon: 'bx-cart-alt' },
         { link: { name: 'ProductsAdmin' }, name: 'Products', tooltip: 'Products', icon: 'bxl-dropbox' },
         { link: { name: 'Categories' }, name: 'Categories', tooltip: 'Categories', icon: 'bx bx-collection' },
         { link: { name: 'StockBatches' }, name: 'Stock Batches', tooltip: 'Stock Batches', icon: 'bx bx-package' },
@@ -42,7 +43,6 @@ export default {
         { link: { name: 'Accounts' }, name: 'Accounts', tooltip: 'Accounts', icon: 'bx-user' },
         { link: { name: 'Roles' }, name: 'Roles', tooltip: 'Roles', icon: 'bx bxs-user-account' },
         { link: { name: 'Permissions' }, name: 'Permissions', tooltip: 'Permissions', icon: 'bx bx-lock' },
-        { link: { name: 'Orders' }, name: 'Orders', tooltip: 'Orders', icon: 'bx-cart-alt' },
         { link: { name: 'Dashboard' }, name: 'Setting', tooltip: 'Setting', icon: 'bx-cog' },
       ],
     }

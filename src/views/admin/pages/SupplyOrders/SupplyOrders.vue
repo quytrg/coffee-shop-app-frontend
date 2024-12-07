@@ -557,6 +557,7 @@
                       </v-data-table-virtual>
                     </v-col>
                   </v-row>
+                  <h6 class="text-end mt-3 mb-0">Total: {{ supplyOrderDetail.totalAmount }}</h6>
                 </v-card-text>
 
                 <v-divider></v-divider>
