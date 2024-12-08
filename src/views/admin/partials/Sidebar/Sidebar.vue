@@ -32,6 +32,7 @@ export default {
   data() {
     return {
       menuItems: [
+        { link: { name: 'ProductSelection' }, name: 'POS', tooltip: 'POS', icon: 'bx bx-desktop' },
         { link: { name: 'Dashboard' }, name: 'Dashboard', tooltip: 'Dashboard', icon: 'bx bxs-dashboard' },
         { link: { name: 'Orders' }, name: 'Orders', tooltip: 'Orders', icon: 'bx-cart-alt' },
         { link: { name: 'OrderReport' }, name: 'Order Report', tooltip: 'Order Report', icon: 'bxs-report' },
